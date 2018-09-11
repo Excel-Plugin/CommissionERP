@@ -2,7 +2,7 @@ from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtWidgets import QWidget, QFormLayout, QTableView, QGridLayout
 
 
-class Widget(QWidget):
+class TabWidget(QWidget):
 
     def __init__(self, table_name):
         super(QWidget, self).__init__()

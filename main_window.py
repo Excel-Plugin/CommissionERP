@@ -8,7 +8,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtSql import *
 
-from Widget import Widget
+from tab_widget import TabWidget
 
 
 class MainWindow(QMainWindow):
@@ -22,13 +22,13 @@ class MainWindow(QMainWindow):
         # self.model = QSqlTableModel(self)
         # self.model.setTable('after_saler')
         # self.model.select()
-        loadUi('MainWindow.ui', self)
+        loadUi('main_window.ui', self)
         # self.tableView.setModel(self.model)
-        self.tabWidget.addTab(Widget('after_saler'), "数据源表")
-        self.tabWidget.addTab(Widget('after_saler'), "售后员表")
-        self.tabWidget.addTab(Widget('after_saler'), "客户编号表")
-        self.tabWidget.addTab(Widget('after_saler'), "规则表")
-        self.tabWidget.addTab(Widget('after_saler'), "主管表")
+        self.tabWidget.addTab(TabWidget('after_saler'), "数据源表")
+        self.tabWidget.addTab(TabWidget('after_saler'), "售后员表")
+        self.tabWidget.addTab(TabWidget('after_saler'), "客户编号表")
+        self.tabWidget.addTab(TabWidget('after_saler'), "规则表")
+        self.tabWidget.addTab(TabWidget('after_saler'), "主管表")
 
 
 if __name__ == '__main__':
