@@ -8,6 +8,7 @@ from PyQt5.uic import loadUi
 
 from main_window import MainWindow
 import resources
+from manage_widget import ManageWidget
 
 
 class Login(QDialog):
@@ -57,6 +58,6 @@ class Login(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     if Login().exec_() == QDialog.Accepted:
-        main_window = MainWindow()
-        main_window.show()
+        manage_widget = ManageWidget()
+        manage_widget.show()
         sys.exit(app.exec_())
