@@ -29,7 +29,7 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page">
     <property name="styleSheet">
@@ -315,18 +315,22 @@ QPushButton:hover{
       <string>搜索表格</string>
      </property>
     </widget>
-    <widget class="QTableWidget" name="tableWidget">
+    <widget class="QTableWidget" name="listTableWidget">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>230</x>
        <y>60</y>
-       <width>801</width>
+       <width>791</width>
        <height>521</height>
       </rect>
      </property>
      <property name="styleSheet">
       <string notr="true">QTableWidget{
 	border: 0px;
+}
+
+QHeaderView::section::horizontal{
+	color: rgb(105, 164, 240);
 }</string>
      </property>
      <property name="gridStyle">
@@ -434,7 +438,7 @@ QPushButton#searchPushButton:hover{
      </property>
     </widget>
     <zorder>imageLabel</zorder>
-    <zorder>tableWidget</zorder>
+    <zorder>listTableWidget</zorder>
     <zorder>selectListWidget</zorder>
     <zorder>vline</zorder>
     <zorder>hLine</zorder>
@@ -928,7 +932,7 @@ QHeaderView::section:horizontal {
       <string>查看序时簿</string>
      </property>
     </widget>
-    <widget class="QTableWidget" name="tableWidget_2">
+    <widget class="QTableWidget" name="conditionTableWidget">
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -1067,7 +1071,7 @@ QPushButton#tableManagePushButton:checked{
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="tableGeneratePushButton">
@@ -1103,7 +1107,7 @@ QPushButton#tableGeneratePushButton:checked{
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="tableViewPushButton">
@@ -1139,7 +1143,7 @@ QPushButton#tableViewPushButton:checked{
      <bool>true</bool>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
   </widget>
