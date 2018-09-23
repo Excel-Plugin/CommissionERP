@@ -34,16 +34,13 @@ class ManageWidget(QWidget):
         self.tableGeneratePushButton.clicked.connect(self.tableGeneratePushButtonClickedSlot)
         self.tableViewPushButton.setChecked(False)
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
+        self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
         self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.Qt.AlignLeft)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         # 序时簿查看page2
-        self.stackedWidget.setCurrentIndex(2)
         self.conditionTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        # rowNumber = self.conditionTableWidget.rowCount()
-        # self.conditionTableWidget.insertRow(rowNumber)
-        # self.conditionTableWidget.setCellWidget(0, 0, LogicWidget())
         self.conditionTableWidget.removeRow(0)
         self.addRowToConditionTableWidget()
         self.addRowToConditionTableWidget()
@@ -51,12 +48,10 @@ class ManageWidget(QWidget):
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
-        print(rowNumber)
         self.conditionTableWidget.insertRow(rowNumber)
         self.conditionTableWidget.setCellWidget(rowNumber, 0, LogicWidget())
         self.conditionTableWidget.setItem(rowNumber, 2, QTableWidgetItem(""))
         self.conditionTableWidget.setCellWidget(rowNumber, 3, CompWidget())
-
 
     def tableManagePushButtonClickedSlot(self):
         self.tableManagePushButton.setChecked(True)

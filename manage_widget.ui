@@ -29,7 +29,7 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page0">
     <property name="styleSheet">
@@ -331,10 +331,15 @@ QPushButton:hover{
 
 QHeaderView::section::horizontal{
 	color: rgb(105, 164, 240);
-}</string>
+}
+
+</string>
      </property>
      <property name="gridStyle">
       <enum>Qt::NoPen</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>true</bool>
      </property>
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
@@ -485,7 +490,7 @@ QComboBox::drop-down:hover {
         background: rgba(255, 255, 255, 30);
 }
 QComboBox::down-arrow {
-        image: url(:/White/arrowBottom);
+        border-image: url(:/img/选择器展开.png);
 }
 QComboBox::down-arrow:on {
         /**top: 1px;**/
@@ -684,6 +689,18 @@ QPushButton:enabled:pressed{
        <height>31</height>
       </rect>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QProgressBar{
+    border: 2px solid grey;
+	border-radius: 5px;
+    color: black;
+    text-align: center;
+}
+QProgressBar::chunk {
+	background-color: #05B8CC;
+    width: 20px;
+}</string>
+     </property>
      <property name="value">
       <number>24</number>
      </property>
@@ -881,13 +898,6 @@ QPushButton:enabled:hover{
 }
 QPushButton:enabled:pressed{
         background: rgb(0, 78, 161);
-}
-QHeaderView::section:horizontal {
-        border: none;
-		border-bottom: 3px solid rgb(0, 78, 161);
-        color: rgb(2, 65, 132);
-        background: transparent;
-        padding-left: 5px;
 }</string>
     </property>
     <widget class="QLabel" name="label_10">
@@ -944,6 +954,15 @@ QHeaderView::section:horizontal {
        <width>931</width>
        <height>321</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QHeaderView::section:horizontal {
+        border: none;
+		border-bottom: 3px solid rgb(0, 78, 161);
+        color: rgb(2, 65, 132);
+        background: transparent;
+        padding-left: 5px;
+}</string>
      </property>
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
