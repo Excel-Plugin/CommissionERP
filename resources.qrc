@@ -1,8 +1,20 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-<qresource>
-<file alias="img/road.jpg">img/海边小路.jpg</file>
-<file alias="img/user.png">img/用户.png</file>
-<file alias="img/password.png">img/密码.png</file>
-</qresource>
+<RCC>
+  <qresource>
+    <file>img/搜索黑.png</file>
+    <file>img/搜索蓝.png</file>
+    <file>img/表格_o.png</file>
+    <file>img/提成计算系统1.png</file>
+    <file>img/数据导入黑.png</file>
+    <file>img/提成计算系统.png</file>
+    <file>img/销售提成结算.png</file>
+    <file>img/草原.png</file>
+    <file>img/星空新.jpg</file>
+    <file>img/新建 .png</file>
+    <file alias="img/export.png">img/导出.png</file>
+    <file alias="img/generate.png">img/生成报表.png</file>
+    <file alias="img/import.png">img/导入.png</file>
+    <file alias="img/road.jpg">img/海边小路.jpg</file>
+    <file alias="img/user.png">img/用户.png</file>
+    <file alias="img/password.png">img/密码.png</file>
+  </qresource>
 </RCC>
