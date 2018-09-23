@@ -36,7 +36,7 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>201</width>
+       <width>221</width>
        <height>291</height>
       </rect>
      </property>
@@ -94,7 +94,7 @@ QListWidget#selectListWidget::item{
     <widget class="Line" name="vline">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>220</x>
        <y>0</y>
        <width>16</width>
        <height>621</height>
@@ -115,7 +115,7 @@ QListWidget#selectListWidget::item{
       <rect>
        <x>10</x>
        <y>580</y>
-       <width>191</width>
+       <width>211</width>
        <height>31</height>
       </rect>
      </property>
@@ -128,7 +128,7 @@ QListWidget#selectListWidget::item{
       <rect>
        <x>1</x>
        <y>290</y>
-       <width>201</width>
+       <width>221</width>
        <height>291</height>
       </rect>
      </property>
@@ -146,7 +146,7 @@ QListWidget#selectListWidget::item{
     <widget class="QPushButton" name="generatePushButton_3">
      <property name="geometry">
       <rect>
-       <x>650</x>
+       <x>660</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -177,9 +177,9 @@ QPushButton:hover{
     <widget class="Line" name="hLine">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>220</x>
        <y>60</y>
-       <width>821</width>
+       <width>801</width>
        <height>31</height>
       </rect>
      </property>
@@ -195,7 +195,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="importPushButton">
      <property name="geometry">
       <rect>
-       <x>230</x>
+       <x>240</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -223,7 +223,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="generatePushButton_2">
      <property name="geometry">
       <rect>
-       <x>510</x>
+       <x>520</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -254,7 +254,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="generatePushButton">
      <property name="geometry">
       <rect>
-       <x>370</x>
+       <x>380</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -285,7 +285,7 @@ QPushButton:hover{
     <widget class="QLineEdit" name="searchLineEdit">
      <property name="geometry">
       <rect>
-       <x>780</x>
+       <x>790</x>
        <y>10</y>
        <width>191</width>
        <height>41</height>
@@ -311,9 +311,9 @@ QPushButton:hover{
     <widget class="QTableWidget" name="tableWidget">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>220</x>
        <y>60</y>
-       <width>821</width>
+       <width>801</width>
        <height>521</height>
       </rect>
      </property>
@@ -322,6 +322,12 @@ QPushButton:hover{
 	border: 0px;
 }</string>
      </property>
+     <property name="gridStyle">
+      <enum>Qt::NoPen</enum>
+     </property>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
      <row>
       <property name="text">
        <string>1</string>
@@ -401,7 +407,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="searchPushButton">
      <property name="geometry">
       <rect>
-       <x>970</x>
+       <x>980</x>
        <y>20</y>
        <width>21</width>
        <height>21</height>
@@ -420,10 +426,10 @@ QPushButton#searchPushButton:hover{
       <string/>
      </property>
     </widget>
+    <zorder>imageLabel</zorder>
     <zorder>tableWidget</zorder>
     <zorder>selectListWidget</zorder>
     <zorder>vline</zorder>
-    <zorder>imageLabel</zorder>
     <zorder>generatePushButton_3</zorder>
     <zorder>hLine</zorder>
     <zorder>importPushButton</zorder>
