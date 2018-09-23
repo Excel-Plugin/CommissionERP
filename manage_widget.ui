@@ -26,11 +26,17 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">QWidget#page{
-	background: white;
-}</string>
+    <string notr="true"/>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page">
+    <property name="styleSheet">
+     <string notr="true">QWidget#page{
+	background: white;
+}</string>
+    </property>
     <widget class="QListWidget" name="selectListWidget">
      <property name="geometry">
       <rect>
@@ -47,7 +53,7 @@
 }
 
 QListWidget#selectListWidget::item{
-	height: 40px;
+	height: 30px;
 }</string>
      </property>
      <item>
@@ -68,7 +74,7 @@ QListWidget#selectListWidget::item{
      </item>
      <item>
       <property name="text">
-       <string>售后员表</string>
+       <string>售后员</string>
       </property>
       <property name="textAlignment">
        <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -76,7 +82,7 @@ QListWidget#selectListWidget::item{
      </item>
      <item>
       <property name="text">
-       <string>客户编号表</string>
+       <string>客户编号</string>
       </property>
       <property name="textAlignment">
        <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -84,7 +90,39 @@ QListWidget#selectListWidget::item{
      </item>
      <item>
       <property name="text">
-       <string>规则表</string>
+       <string>规则</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>指导价</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>主管</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>业务员提成明细</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>售后员提成明细</string>
       </property>
       <property name="textAlignment">
        <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -143,37 +181,6 @@ QListWidget#selectListWidget::item{
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;昆山道普&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;润滑科技&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;有限公司&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="generatePushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>660</x>
-       <y>10</y>
-       <width>111</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton{
-	background: white;
-	border: none;
-	font-family: &quot;微软雅黑&quot;;
-	font-size: 17px;
-}
-
-QPushButton:hover{
-	border: 1px solid rgb(105, 164, 240);
-	border-radius: 5px;
-	color: rgb(85, 170, 255);
-}</string>
-     </property>
-     <property name="text">
-      <string>新建表格</string>
-     </property>
-     <property name="icon">
-      <iconset resource="resources.qrc">
-       <normaloff>:/img/新建.png</normaloff>:/img/新建.png</iconset>
-     </property>
-    </widget>
     <widget class="Line" name="hLine">
      <property name="geometry">
       <rect>
@@ -197,7 +204,7 @@ QPushButton:hover{
       <rect>
        <x>240</x>
        <y>10</y>
-       <width>111</width>
+       <width>121</width>
        <height>41</height>
       </rect>
      </property>
@@ -223,9 +230,9 @@ QPushButton:hover{
     <widget class="QPushButton" name="generatePushButton_2">
      <property name="geometry">
       <rect>
-       <x>520</x>
+       <x>560</x>
        <y>10</y>
-       <width>111</width>
+       <width>121</width>
        <height>41</height>
       </rect>
      </property>
@@ -254,9 +261,9 @@ QPushButton:hover{
     <widget class="QPushButton" name="generatePushButton">
      <property name="geometry">
       <rect>
-       <x>380</x>
+       <x>400</x>
        <y>10</y>
-       <width>111</width>
+       <width>121</width>
        <height>41</height>
       </rect>
      </property>
@@ -285,9 +292,9 @@ QPushButton:hover{
     <widget class="QLineEdit" name="searchLineEdit">
      <property name="geometry">
       <rect>
-       <x>790</x>
+       <x>720</x>
        <y>10</y>
-       <width>191</width>
+       <width>261</width>
        <height>41</height>
       </rect>
      </property>
@@ -430,7 +437,6 @@ QPushButton#searchPushButton:hover{
     <zorder>tableWidget</zorder>
     <zorder>selectListWidget</zorder>
     <zorder>vline</zorder>
-    <zorder>generatePushButton_3</zorder>
     <zorder>hLine</zorder>
     <zorder>importPushButton</zorder>
     <zorder>generatePushButton_2</zorder>
@@ -440,13 +446,103 @@ QPushButton#searchPushButton:hover{
     <zorder>searchPushButton</zorder>
    </widget>
    <widget class="QWidget" name="page_2">
+    <property name="styleSheet">
+     <string notr="true">QWidget#page_2{
+	background: white;
+	border-image: url(:/img/乘风破浪.jpg);
+}
+
+QWidget{
+	font-size: 20px;
+	font-family: &quot;微软雅黑&quot;;
+}
+
+QComboBox {
+        height: 25px;
+        border-radius: 4px;
+        border: 1px solid rgb(111, 156, 207);
+        background: white;
+}
+QComboBox:enabled {
+        color: rgb(84, 84, 84);
+}
+QComboBox:!enabled {
+        color: rgb(80, 80, 80);
+}
+QComboBox:enabled:hover, QComboBox:enabled:focus {
+        color: rgb(51, 51, 51);
+}
+QComboBox::drop-down {
+        width: 20px;
+        border: none;
+        background: transparent;
+}
+QComboBox::drop-down:hover {
+        background: rgba(255, 255, 255, 30);
+}
+QComboBox::down-arrow {
+        image: url(:/White/arrowBottom);
+}
+QComboBox::down-arrow:on {
+        /**top: 1px;**/
+}
+QComboBox QAbstractItemView {
+        border: 1px solid rgb(111, 156, 207);
+        background: white;
+        outline: none;
+}
+QComboBox QAbstractItemView::item {
+        height: 25px;
+        color: rgb(73, 73, 73);
+}
+QComboBox QAbstractItemView::item:selected {
+        background: rgb(232, 241, 250);
+        color: rgb(2, 65, 132);
+}
+QLineEdit {
+        border-radius: 4px;
+        height: 25px;
+        border: 1px solid rgb(111, 156, 207);
+        background: white;
+}
+QLineEdit:enabled {
+        color: rgb(84, 84, 84);
+}
+QLineEdit:enabled:hover, QLineEdit:enabled:focus {
+        color: rgb(51, 51, 51);
+}
+QLineEdit:!enabled {
+        color: rgb(80, 80, 80);
+}
+QPushButton{
+        border-radius: 4px;
+        border: none;
+        width: 75px;
+        height: 25px;
+}
+QPushButton:enabled {
+        background: rgb(120, 170, 220);
+        color: white;
+}
+QPushButton:!enabled {
+        background: rgb(180, 180, 180);
+        color: white;
+}
+QPushButton:enabled:hover{
+        background: rgb(100, 160, 220);
+}
+QPushButton:enabled:pressed{
+        background: rgb(0, 78, 161);
+}
+</string>
+    </property>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>120</y>
+       <x>60</x>
+       <y>80</y>
        <width>111</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
@@ -456,10 +552,10 @@ QPushButton#searchPushButton:hover{
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>170</y>
+       <x>550</x>
+       <y>80</y>
        <width>111</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
@@ -469,10 +565,10 @@ QPushButton#searchPushButton:hover{
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>220</y>
+       <x>550</x>
+       <y>240</y>
        <width>111</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
@@ -482,23 +578,23 @@ QPushButton#searchPushButton:hover{
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>270</y>
+       <x>60</x>
+       <y>240</y>
        <width>111</width>
-       <height>41</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="text">
       <string>主管表</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="dataSourceComboBox">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>130</y>
-       <width>171</width>
-       <height>22</height>
+       <x>210</x>
+       <y>91</y>
+       <width>191</width>
+       <height>31</height>
       </rect>
      </property>
      <item>
@@ -506,14 +602,24 @@ QPushButton#searchPushButton:hover{
        <string>数据源表2018-08</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>数据源表2018-07</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>数据源表2018-06</string>
+      </property>
+     </item>
     </widget>
-    <widget class="QComboBox" name="comboBox_2">
+    <widget class="QComboBox" name="ruleComboBox">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>180</y>
-       <width>171</width>
-       <height>22</height>
+       <x>700</x>
+       <y>90</y>
+       <width>191</width>
+       <height>31</height>
       </rect>
      </property>
      <item>
@@ -525,10 +631,10 @@ QPushButton#searchPushButton:hover{
     <widget class="QComboBox" name="comboBox_3">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>230</y>
-       <width>171</width>
-       <height>22</height>
+       <x>700</x>
+       <y>250</y>
+       <width>191</width>
+       <height>31</height>
       </rect>
      </property>
      <item>
@@ -540,10 +646,10 @@ QPushButton#searchPushButton:hover{
     <widget class="QComboBox" name="comboBox_4">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>280</y>
-       <width>171</width>
-       <height>22</height>
+       <x>210</x>
+       <y>249</y>
+       <width>191</width>
+       <height>31</height>
       </rect>
      </property>
      <item>
@@ -555,10 +661,10 @@ QPushButton#searchPushButton:hover{
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>350</y>
-       <width>101</width>
-       <height>28</height>
+       <x>310</x>
+       <y>440</y>
+       <width>151</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="text">
@@ -568,14 +674,116 @@ QPushButton#searchPushButton:hover{
     <widget class="QProgressBar" name="progressBar">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>350</y>
-       <width>181</width>
-       <height>23</height>
+       <x>510</x>
+       <y>445</y>
+       <width>191</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="value">
       <number>24</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>160</y>
+       <width>111</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>指导价</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="dataSourceComboBox_2">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>170</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>指导价表2018-08</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>160</y>
+       <width>111</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>客户编号</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="ruleComboBox_2">
+     <property name="geometry">
+      <rect>
+       <x>700</x>
+       <y>170</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>客户编号表A</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>320</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>业务员提成明细</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>330</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>700</x>
+       <y>330</y>
+       <width>191</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>320</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>售后员提成明细</string>
      </property>
     </widget>
    </widget>
