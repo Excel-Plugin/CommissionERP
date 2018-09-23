@@ -19,9 +19,9 @@
   <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
-     <x>11</x>
+     <x>-4</x>
      <y>77</y>
-     <width>996</width>
+     <width>1021</width>
      <height>611</height>
     </rect>
    </property>
@@ -146,7 +146,7 @@ QListWidget#selectListWidget::item{
     <widget class="QPushButton" name="generatePushButton_3">
      <property name="geometry">
       <rect>
-       <x>640</x>
+       <x>650</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -171,7 +171,7 @@ QPushButton:hover{
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/img/新建 .png</normaloff>:/img/新建 .png</iconset>
+       <normaloff>:/img/新建.png</normaloff>:/img/新建.png</iconset>
      </property>
     </widget>
     <widget class="Line" name="hLine">
@@ -179,7 +179,7 @@ QPushButton:hover{
       <rect>
        <x>200</x>
        <y>60</y>
-       <width>791</width>
+       <width>821</width>
        <height>31</height>
       </rect>
      </property>
@@ -195,7 +195,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="importPushButton">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>230</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -223,7 +223,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="generatePushButton_2">
      <property name="geometry">
       <rect>
-       <x>500</x>
+       <x>510</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -254,7 +254,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="generatePushButton">
      <property name="geometry">
       <rect>
-       <x>360</x>
+       <x>370</x>
        <y>10</y>
        <width>111</width>
        <height>41</height>
@@ -285,9 +285,9 @@ QPushButton:hover{
     <widget class="QLineEdit" name="searchLineEdit">
      <property name="geometry">
       <rect>
-       <x>770</x>
+       <x>780</x>
        <y>10</y>
-       <width>171</width>
+       <width>191</width>
        <height>41</height>
       </rect>
      </property>
@@ -313,7 +313,7 @@ QPushButton:hover{
       <rect>
        <x>200</x>
        <y>60</y>
-       <width>771</width>
+       <width>821</width>
        <height>521</height>
       </rect>
      </property>
@@ -401,7 +401,7 @@ QPushButton:hover{
     <widget class="QPushButton" name="searchPushButton">
      <property name="geometry">
       <rect>
-       <x>960</x>
+       <x>970</x>
        <y>20</y>
        <width>21</width>
        <height>21</height>
@@ -608,9 +608,9 @@ QPushButton#searchPushButton:hover{
   <widget class="QFrame" name="titleFrame">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>0</y>
-     <width>1001</width>
+     <width>1021</width>
      <height>80</height>
     </rect>
    </property>
