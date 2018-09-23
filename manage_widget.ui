@@ -29,11 +29,11 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
-   <widget class="QWidget" name="page">
+   <widget class="QWidget" name="page0">
     <property name="styleSheet">
-     <string notr="true">QWidget#page{
+     <string notr="true">QWidget#page0{
 	background: white;
 }</string>
     </property>
@@ -449,9 +449,9 @@ QPushButton#searchPushButton:hover{
     <zorder>label</zorder>
     <zorder>searchPushButton</zorder>
    </widget>
-   <widget class="QWidget" name="page_2">
+   <widget class="QWidget" name="page1">
     <property name="styleSheet">
-     <string notr="true">QWidget#page_2{
+     <string notr="true">QWidget#page1{
 	background: white;
 	border-image: url(:/img/乘风破浪.jpg);
 }
@@ -791,9 +791,9 @@ QPushButton:enabled:pressed{
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="page_3">
+   <widget class="QWidget" name="page2">
     <property name="styleSheet">
-     <string notr="true">QWidget#page_3{
+     <string notr="true">QWidget#page2{
 	background: white;
 }
 QWidget{
@@ -801,7 +801,11 @@ QWidget{
 	font-family: &quot;微软雅黑&quot;;
 }
 
-QComboBox {
+QComboBox{
+        background: white;
+		border: none;
+}
+QComboBox#tableTypeComboBox {
         height: 25px;
         border-radius: 4px;
         border: 1px solid rgb(111, 156, 207);
@@ -818,14 +822,14 @@ QComboBox:enabled:hover, QComboBox:enabled:focus {
 }
 QComboBox::drop-down {
         width: 20px;
-        border: none;
+		border: none;
         background: transparent;
 }
 QComboBox::drop-down:hover {
         background: rgba(255, 255, 255, 30);
 }
 QComboBox::down-arrow {
-        image: url(:/White/arrowBottom);
+        border-image: url(:/img/选择器展开.png);
 }
 QComboBox::down-arrow:on {
         /**top: 1px;**/
@@ -899,7 +903,7 @@ QHeaderView::section:horizontal {
       <string>请选择数据表类型：</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="dataSourceComboBox_3">
+    <widget class="QComboBox" name="tableTypeComboBox">
      <property name="geometry">
       <rect>
        <x>490</x>
@@ -935,9 +939,9 @@ QHeaderView::section:horizontal {
     <widget class="QTableWidget" name="conditionTableWidget">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>50</x>
        <y>120</y>
-       <width>691</width>
+       <width>931</width>
        <height>321</height>
       </rect>
      </property>

@@ -1,20 +1,24 @@
 import sys
 
 from PyQt5 import Qt
-from PyQt5.QtWidgets import QWidget, QListWidgetItem, QHBoxLayout, QLabel, QPushButton, QApplication, QHeaderView
+from PyQt5.QtWidgets import QWidget, QListWidgetItem, QHBoxLayout, QLabel, QPushButton, QApplication, QHeaderView, \
+    QTableView, QAbstractItemView, QComboBox, QTableWidgetItem
 from PyQt5.uic import loadUi
 import resources
 
 
-class ListWidgetItem(QListWidgetItem):
+class LogicWidget(QComboBox):
 
     def __init__(self):
-        super(ListWidgetItem, self).__init__()
-        layout = QHBoxLayout()
-        layout.addWidget(QLabel("数据源表2018-08"))
-        layout.addWidget(QPushButton("打开"))
-        layout.addWidget(QPushButton("删除"))
-        self.setLayout(layout)
+        super(QComboBox, self).__init__()
+        self.addItems(["并且", "或者"])
+
+
+class CompWidget(QComboBox):
+
+    def __init__(self):
+        super(QComboBox, self).__init__()
+        self.addItems(["等于", "不等于", "大于", "大于或等于", "小于", "小于或等于", "包含", "不包含", "为空值", "不为空值"])
 
 
 class ManageWidget(QWidget):
@@ -24,14 +28,35 @@ class ManageWidget(QWidget):
         loadUi('manage_widget.ui', self)
         self.setWindowFlags(Qt.Qt.WindowMinimizeButtonHint | Qt.Qt.WindowCloseButtonHint)
         self.setFixedSize(self.width(), self.height())
-        self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.Qt.AlignLeft)
-        self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.tableManagePushButton.setChecked(True)
         self.tableManagePushButton.clicked.connect(self.tableManagePushButtonClickedSlot)
         self.tableGeneratePushButton.setChecked(False)
         self.tableGeneratePushButton.clicked.connect(self.tableGeneratePushButtonClickedSlot)
         self.tableViewPushButton.setChecked(False)
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
+        # 业务表管理page0
+        self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.Qt.AlignLeft)
+        self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
+        self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # 序时簿查看page2
+        self.stackedWidget.setCurrentIndex(2)
+        self.conditionTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # rowNumber = self.conditionTableWidget.rowCount()
+        # self.conditionTableWidget.insertRow(rowNumber)
+        # self.conditionTableWidget.setCellWidget(0, 0, LogicWidget())
+        self.conditionTableWidget.removeRow(0)
+        self.addRowToConditionTableWidget()
+        self.addRowToConditionTableWidget()
+        self.addRowToConditionTableWidget()
+
+    def addRowToConditionTableWidget(self):
+        rowNumber = self.conditionTableWidget.rowCount()
+        print(rowNumber)
+        self.conditionTableWidget.insertRow(rowNumber)
+        self.conditionTableWidget.setCellWidget(rowNumber, 0, LogicWidget())
+        self.conditionTableWidget.setItem(rowNumber, 2, QTableWidgetItem(""))
+        self.conditionTableWidget.setCellWidget(rowNumber, 3, CompWidget())
+
 
     def tableManagePushButtonClickedSlot(self):
         self.tableManagePushButton.setChecked(True)
