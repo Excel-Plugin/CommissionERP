@@ -14,6 +14,13 @@ class LogicWidget(QComboBox):
         self.addItems(["并且", "或者"])
 
 
+class NameWidget(QComboBox):
+
+    def __init__(self):
+        super(QComboBox, self).__init__()
+        self.addItems(["姓名", "出货地点", "客户编号", "客户名称"])
+
+
 class CompWidget(QComboBox):
 
     def __init__(self):
@@ -50,7 +57,7 @@ class ManageWidget(QWidget):
         rowNumber = self.conditionTableWidget.rowCount()
         self.conditionTableWidget.insertRow(rowNumber)
         self.conditionTableWidget.setCellWidget(rowNumber, 0, LogicWidget())
-        self.conditionTableWidget.setItem(rowNumber, 2, QTableWidgetItem(""))
+        self.conditionTableWidget.setCellWidget(rowNumber, 2, NameWidget())
         self.conditionTableWidget.setCellWidget(rowNumber, 3, CompWidget())
 
     def tableManagePushButtonClickedSlot(self):
