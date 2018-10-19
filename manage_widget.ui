@@ -29,7 +29,7 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page0">
     <property name="styleSheet">
@@ -933,7 +933,7 @@ QPushButton:enabled:pressed{
       </property>
      </item>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="condTableGenPushButton">
      <property name="geometry">
       <rect>
        <x>400</x>
