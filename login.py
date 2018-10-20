@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QStyleOption, QStyle, QLineEd
 from PyQt5 import Qt, QtGui
 from PyQt5.uic import loadUi
 
-from main_window import MainWindow
+from table_editor import TableEditor
 import resources
 from manage_widget import ManageWidget
 
@@ -58,6 +58,8 @@ class Login(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     if Login().exec_() == QDialog.Accepted:
-        manage_widget = ManageWidget()
-        manage_widget.show()
+        manageWidget = ManageWidget()
+        manageWidget.show()
+        tableEditor = TableEditor()
+        manageWidget.condTableGenPushButton.clicked.connect(lambda: tableEditor.addTabWidget('123'))
         sys.exit(app.exec_())

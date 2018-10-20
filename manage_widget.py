@@ -49,9 +49,8 @@ class ManageWidget(QWidget):
         # 序时簿查看page2
         self.conditionTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.conditionTableWidget.removeRow(0)
-        self.addRowToConditionTableWidget()
-        self.addRowToConditionTableWidget()
-        self.addRowToConditionTableWidget()
+        self.addConditionPushButton.clicked.connect(self.addRowToConditionTableWidget)
+        self.deleteConditionPushButton.clicked.connect(self.removeRowFromConditionTableWidget)
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
@@ -59,6 +58,9 @@ class ManageWidget(QWidget):
         self.conditionTableWidget.setCellWidget(rowNumber, 0, LogicWidget())
         self.conditionTableWidget.setCellWidget(rowNumber, 2, NameWidget())
         self.conditionTableWidget.setCellWidget(rowNumber, 3, CompWidget())
+
+    def removeRowFromConditionTableWidget(self):
+        self.conditionTableWidget.removeRow(self.conditionTableWidget.currentRow())
 
     def tableManagePushButtonClickedSlot(self):
         self.tableManagePushButton.setChecked(True)
