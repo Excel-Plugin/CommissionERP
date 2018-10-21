@@ -1,3 +1,4 @@
+import sqlite3
 import sys
 
 from PyQt5 import Qt
@@ -5,6 +6,7 @@ from PyQt5.QtWidgets import QWidget, QListWidgetItem, QHBoxLayout, QLabel, QPush
     QTableView, QAbstractItemView, QComboBox, QTableWidgetItem
 from PyQt5.uic import loadUi
 import resources
+from table_editor import TableEditor
 
 
 class LogicWidget(QComboBox):
@@ -14,11 +16,17 @@ class LogicWidget(QComboBox):
         self.addItems(["并且", "或者"])
 
 
+cursor = sqlite3.connect("test.db").cursor()
+cursor.execute('pragma table_info(saler)')
+columns = cursor.fetchall()
+columnType = {c[1]: c[2] for c in columns}
+
+
 class NameWidget(QComboBox):
 
     def __init__(self):
         super(QComboBox, self).__init__()
-        self.addItems(["姓名", "出货地点", "客户编号", "客户名称"])
+        self.addItems([c[1] for c in columns])
 
 
 class CompWidget(QComboBox):
@@ -27,12 +35,26 @@ class CompWidget(QComboBox):
         super(QComboBox, self).__init__()
         self.addItems(["等于", "不等于", "大于", "大于或等于", "小于", "小于或等于", "包含", "不包含", "为空值", "不为空值"])
 
+    def getCondition(self, name, value):
+        if 'varchar' in columnType[name]:  # 注意：若使用了其他的文本数据类型，这里需要更改
+            value = "'" + value + "'"
+        conditionDict = {"等于": name+" = "+value, "不等于": name+" != "+value,
+                         "大于": name+" > "+value, "大于或等于": name+" >= "+value,
+                         "小于": name+" < "+value, "小于或等于": name+" <= "+value,
+                         # 注意：若关系为“包含”，则name必定为字符串相关类型，则value必定会两侧加''，所以下面需要去掉
+                         "包含": name+" like '%"+value[1:-1]+"%' ", "不包含": name+"not like '%"+value[1:-1]+"%' ",
+                         "为空值": name+" is not null ", "不为空值": name+" is null "
+                         }
+        return conditionDict[self.currentText()]
+
 
 class ManageWidget(QWidget):
+    conditionRow = {'logic': 0, 'name': 2, 'comp': 3, 'value': 4}
 
-    def __init__(self):
+    def __init__(self, addTabSignal):
         super(ManageWidget, self).__init__()
         loadUi('manage_widget.ui', self)
+        self.addTabSignal = addTabSignal
         self.setWindowFlags(Qt.Qt.WindowMinimizeButtonHint | Qt.Qt.WindowCloseButtonHint)
         self.setFixedSize(self.width(), self.height())
         self.tableManagePushButton.setChecked(True)
@@ -51,13 +73,14 @@ class ManageWidget(QWidget):
         self.conditionTableWidget.removeRow(0)
         self.addConditionPushButton.clicked.connect(self.addRowToConditionTableWidget)
         self.deleteConditionPushButton.clicked.connect(self.removeRowFromConditionTableWidget)
+        self.condTableGenPushButton.clicked.connect(self.condTableGenPushButtonClickedSlot)
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
         self.conditionTableWidget.insertRow(rowNumber)
-        self.conditionTableWidget.setCellWidget(rowNumber, 0, LogicWidget())
-        self.conditionTableWidget.setCellWidget(rowNumber, 2, NameWidget())
-        self.conditionTableWidget.setCellWidget(rowNumber, 3, CompWidget())
+        self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['logic'], LogicWidget())
+        self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['name'], NameWidget())
+        self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['comp'], CompWidget())
 
     def removeRowFromConditionTableWidget(self):
         self.conditionTableWidget.removeRow(self.conditionTableWidget.currentRow())
@@ -79,6 +102,16 @@ class ManageWidget(QWidget):
         self.tableGeneratePushButton.setChecked(False)
         self.tableViewPushButton.setChecked(True)
         self.stackedWidget.setCurrentIndex(2)
+
+    def condTableGenPushButtonClickedSlot(self):
+        condition = ""
+        for i in range(self.conditionTableWidget.rowCount()):
+            if i >= 1:
+                condition += " and "
+            name = self.conditionTableWidget.cellWidget(i, self.conditionRow['name']).currentText()
+            value = self.conditionTableWidget.item(i, self.conditionRow['value']).text()
+            condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp']).getCondition(name, value)
+        self.addTabSignal.emit(condition)
 
 
 if __name__ == '__main__':

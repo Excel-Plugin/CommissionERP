@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QApplication, QHeaderView, QTableView
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.uic import loadUi
@@ -8,26 +8,22 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtSql import *
 
-from tab_widget import TabWidget
+from table_page import TablePage
 
 
 class TableEditor(QMainWindow):
+    addTabSignal = QtCore.pyqtSignal(object, name='AddTabSignal')
 
     def __init__(self):
         super(TableEditor, self).__init__()
         db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName('./test.db')
-        if db.open():
-            print("db is open")
-        # self.model = QSqlTableModel(self)
-        # self.model.setTable('test')
-        # self.model.select()
+        db.setDatabaseName('test.db')
         loadUi('table_editor.ui', self)
-        # self.tableView.setModel(self.model)
-        # self.tabWidget.addTab(TabWidget('saler'), "业务员提成明细序时簿1")
+        self.addTabSignal.connect(self.addTabWidget)
 
     def addTabWidget(self, condition):
-        self.tabWidget.addTab(TabWidget('saler'), "业务员提成明细序时簿1")
+        self.tabWidget.addTab(TablePage('saler', condition), "序时簿" + str(self.tabWidget.count() + 1))
+        self.tabWidget.setCurrentIndex(self.tabWidget.count()-1)
         self.show()
 
 

@@ -58,8 +58,7 @@ class Login(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     if Login().exec_() == QDialog.Accepted:
-        manageWidget = ManageWidget()
-        manageWidget.show()
         tableEditor = TableEditor()
-        manageWidget.condTableGenPushButton.clicked.connect(lambda: tableEditor.addTabWidget('123'))
+        manageWidget = ManageWidget(tableEditor.addTabSignal)
+        manageWidget.show()
         sys.exit(app.exec_())
