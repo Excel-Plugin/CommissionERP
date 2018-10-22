@@ -43,7 +43,7 @@ class CompWidget(QComboBox):
                          "小于": name+" < "+value, "小于或等于": name+" <= "+value,
                          # 注意：若关系为“包含”，则name必定为字符串相关类型，则value必定会两侧加''，所以下面需要去掉
                          "包含": name+" like '%"+value[1:-1]+"%' ", "不包含": name+"not like '%"+value[1:-1]+"%' ",
-                         "为空值": name+" is not null ", "不为空值": name+" is null "
+                         "为空值": name+" is null ", "不为空值": name+" is not null "
                          }
         return conditionDict[self.currentText()]
 
@@ -81,6 +81,7 @@ class ManageWidget(QWidget):
         self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['logic'], LogicWidget())
         self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['name'], NameWidget())
         self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['comp'], CompWidget())
+        self.conditionTableWidget.setItem(rowNumber, self.conditionRow['value'], QTableWidgetItem(""))
 
     def removeRowFromConditionTableWidget(self):
         self.conditionTableWidget.removeRow(self.conditionTableWidget.currentRow())
