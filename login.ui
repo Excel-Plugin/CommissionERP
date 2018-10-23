@@ -15,7 +15,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget#Form{
-	border-image: url(:/img/road.jpg);
+	border-image: url(:/img/海边小路.png);
 }</string>
   </property>
   <widget class="QLabel" name="titleLabel">

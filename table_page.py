@@ -1,12 +1,25 @@
-from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtWidgets import QWidget, QFormLayout, QTableView, QGridLayout
+from PyQt5 import QtSql
+from PyQt5.QtSql import QSqlTableModel, QSqlDatabase
+from PyQt5.QtWidgets import QWidget, QFormLayout, QTableView, QGridLayout, QApplication
+import logging
 
 
 class TablePage(QWidget):
 
-    def __init__(self, table_name, condition):
+    def __init__(self, db, table_name, condition):
         super(QWidget, self).__init__()
-        self.model = QSqlTableModel(self)
+        self.db = QSqlDatabase.addDatabase("QSQLITE", "SQLITE")
+        self.db.setDatabaseName('test.db')
+        logging.basicConfig(filename="log.txt", level=logging.DEBUG)
+        if self.db.open():  # 开启数据库连接
+            logging.info("db is open")
+        else:
+            logging.critical("db is not open!!!")
+            err = self.db.lastError()
+            logging.critical(err.text())
+            logging.critical(QtSql.QSqlDatabase.drivers())
+            logging.critical(QApplication.libraryPaths())
+        self.model = QSqlTableModel(self, db=self.db)
         self.model.setTable(table_name)
         self.model.setFilter(condition)
         self.model.select()

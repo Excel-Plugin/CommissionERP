@@ -16,13 +16,11 @@ class Login(QDialog):
     def __init__(self):
         super(QWidget, self).__init__()
         loadUi('login.ui', self)
-        # self.ui = Ui_Form()
-        # self.ui.setupUi(self)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)  # 去掉标题栏
         self.passwordLineEdit.setEchoMode(QLineEdit.Password)  # 密码输入
         self.loginPushButton.setCursor(QCursor(Qt.Qt.PointingHandCursor))  # 鼠标显示为手形
         self.exitPushButton.setCursor(QCursor(Qt.Qt.PointingHandCursor))
-        self.exitPushButton.clicked.connect(exit)
+        self.exitPushButton.clicked.connect(sys.exit)
         self.loginPushButton.clicked.connect(self.login)
 
         self.__bPressFlag = False

@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>img/海边小路.png</file>
     <file>img/选择器展开.png</file>
     <file>img/乘风破浪.jpg</file>
     <file>img/搜索黑.png</file>
@@ -12,7 +13,6 @@
     <file>img/新建.png</file>
     <file alias="img/generate.png">img/生成报表.png</file>
     <file alias="img/import.png">img/导入.png</file>
-    <file alias="img/road.jpg">img/海边小路.jpg</file>
     <file alias="img/user.png">img/用户.png</file>
     <file alias="img/password.png">img/密码.png</file>
   </qresource>

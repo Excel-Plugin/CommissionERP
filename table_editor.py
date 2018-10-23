@@ -1,11 +1,9 @@
 import sys
 
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QApplication, QHeaderView, QTableView
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 from PyQt5.QtSql import *
 
 from table_page import TablePage
@@ -16,13 +14,14 @@ class TableEditor(QMainWindow):
 
     def __init__(self):
         super(TableEditor, self).__init__()
-        db = QSqlDatabase.addDatabase("QSQLITE")
-        db.setDatabaseName('test.db')
         loadUi('table_editor.ui', self)
-        self.addTabSignal.connect(self.addTabWidget)
+        self.db = QSqlDatabase.addDatabase("QSQLITE")
+        self.db.setDatabaseName('test.db')
+        self.db.open()  # 开启数据库连接
+        self.addTabSignal.connect(self.addTablePage)
 
-    def addTabWidget(self, condition):
-        self.tabWidget.addTab(TablePage('saler', condition), "序时簿" + str(self.tabWidget.count() + 1))
+    def addTablePage(self, condition):
+        self.tabWidget.addTab(TablePage(self.db, 'saler', condition), "序时簿" + str(self.tabWidget.count() + 1))
         self.tabWidget.setCurrentIndex(self.tabWidget.count()-1)
         self.show()
 
