@@ -1,7 +1,7 @@
 import sqlite3
 import sys
 
-from PyQt5 import Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QHBoxLayout, QLabel, QPushButton, QApplication, QHeaderView, \
     QTableView, QAbstractItemView, QComboBox, QTableWidgetItem
 from PyQt5.uic import loadUi
@@ -55,7 +55,7 @@ class ManageWidget(QWidget):
         super(ManageWidget, self).__init__()
         loadUi('manage_widget.ui', self)
         self.addTabSignal = addTabSignal
-        self.setWindowFlags(Qt.Qt.WindowMinimizeButtonHint | Qt.Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
         self.setFixedSize(self.width(), self.height())
         self.tableManagePushButton.setChecked(True)
         self.tableManagePushButton.clicked.connect(self.tableManagePushButtonClickedSlot)
@@ -65,7 +65,7 @@ class ManageWidget(QWidget):
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
         self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
-        self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.Qt.AlignLeft)
+        self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         # 序时簿查看page2

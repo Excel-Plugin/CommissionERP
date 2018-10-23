@@ -1,9 +1,10 @@
+import logging
 import sys
 
-from PyQt5.QtCore import QPoint
+from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QPainter, QCursor
 from PyQt5.QtWidgets import QWidget, QApplication, QStyleOption, QStyle, QLineEdit, QDialog, QMessageBox
-from PyQt5 import Qt, QtGui
+from PyQt5 import QtGui
 from PyQt5.uic import loadUi
 
 from table_editor import TableEditor
@@ -16,10 +17,10 @@ class Login(QDialog):
     def __init__(self):
         super(QWidget, self).__init__()
         loadUi('login.ui', self)
-        self.setWindowFlags(Qt.Qt.FramelessWindowHint)  # 去掉标题栏
+        self.setWindowFlags(Qt.FramelessWindowHint)  # 去掉标题栏
         self.passwordLineEdit.setEchoMode(QLineEdit.Password)  # 密码输入
-        self.loginPushButton.setCursor(QCursor(Qt.Qt.PointingHandCursor))  # 鼠标显示为手形
-        self.exitPushButton.setCursor(QCursor(Qt.Qt.PointingHandCursor))
+        self.loginPushButton.setCursor(QCursor(Qt.PointingHandCursor))  # 鼠标显示为手形
+        self.exitPushButton.setCursor(QCursor(Qt.PointingHandCursor))
         self.exitPushButton.clicked.connect(sys.exit)
         self.loginPushButton.clicked.connect(self.login)
 
@@ -54,9 +55,18 @@ class Login(QDialog):
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    if Login().exec_() == QDialog.Accepted:
-        tableEditor = TableEditor()
-        manageWidget = ManageWidget(tableEditor.addTabSignal)
-        manageWidget.show()
-        sys.exit(app.exec_())
+    logging.basicConfig(filename='log.txt', level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s')
+    logging.debug("程序开始启动...")
+    try:
+        app = QApplication(sys.argv)
+        if Login().exec_() == QDialog.Accepted:
+            logging.info("登录成功，正在初始化TableEditor")
+            tableEditor = TableEditor()
+            logging.info("TableEditor初始化完成，正在初始化ManageWidget")
+            manageWidget = ManageWidget(tableEditor.addTabSignal)
+            logging.info("ManageWidget初始化完成，正在调用show函数")
+            manageWidget.show()
+            sys.exit(app.exec_())
+    except Exception as e:
+        QMessageBox.warning(None, "Exception", str(e))
+        logging.exception(e)
