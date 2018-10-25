@@ -398,11 +398,7 @@ QPushButton#closeButton:pressed {
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="actionDataSource"/>
-    <addaction name="actionRule"/>
-    <addaction name="actionAfterSaler"/>
-    <addaction name="actionClient"/>
-    <addaction name="actionManager"/>
+    <addaction name="actionExportExcel"/>
    </widget>
    <addaction name="File"/>
   </widget>
@@ -430,6 +426,11 @@ QPushButton#closeButton:pressed {
   <action name="actionManager">
    <property name="text">
     <string>主管表</string>
+   </property>
+  </action>
+  <action name="actionExportExcel">
+   <property name="text">
+    <string>导出Excel</string>
    </property>
   </action>
  </widget>
