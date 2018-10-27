@@ -403,31 +403,6 @@ QPushButton#closeButton:pressed {
    <addaction name="File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionDataSource">
-   <property name="text">
-    <string>数据源表</string>
-   </property>
-  </action>
-  <action name="actionRule">
-   <property name="text">
-    <string>规则表</string>
-   </property>
-  </action>
-  <action name="actionAfterSaler">
-   <property name="text">
-    <string>售后员表</string>
-   </property>
-  </action>
-  <action name="actionClient">
-   <property name="text">
-    <string>客户编号表</string>
-   </property>
-  </action>
-  <action name="actionManager">
-   <property name="text">
-    <string>主管表</string>
-   </property>
-  </action>
   <action name="actionExportExcel">
    <property name="text">
     <string>导出Excel</string>

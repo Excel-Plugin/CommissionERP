@@ -4,3 +4,4 @@ build/
 *.spec
 *log.txt
 *.zip
+test*

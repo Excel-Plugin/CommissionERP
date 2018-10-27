@@ -11,6 +11,9 @@ from table_editor import TableEditor
 import resources
 from manage_widget import ManageWidget
 
+logging.basicConfig(filename='log.txt', filemode='w', level=logging.INFO,
+                    format='%(asctime)s : %(levelname)s : %(message)s')
+
 
 class Login(QDialog):
 
@@ -55,7 +58,6 @@ class Login(QDialog):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='log.txt', level=logging.DEBUG, format='%(asctime)s : %(levelname)s : %(message)s')
     logging.debug("程序开始启动...")
     try:
         app = QApplication(sys.argv)
