@@ -17,7 +17,7 @@ class LogicWidget(QComboBox):
 
 
 cursor = sqlite3.connect("test.db").cursor()
-cursor.execute('pragma table_info(saler)')
+cursor.execute('pragma table_info(salesman)')
 columns = cursor.fetchall()
 columnType = {c[1]: c[2] for c in columns}
 

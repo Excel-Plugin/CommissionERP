@@ -17,10 +17,9 @@ class TablePage(QWidget):
             logging.critical(err.text())
             logging.critical(QtSql.QSqlDatabase.drivers())
             logging.critical(QApplication.libraryPaths())
-        self.condition = condition
         self.model = QSqlTableModel(self, db=self.db)
         self.model.setTable(table_name)
-        self.model.setFilter(self.condition)
+        self.model.setFilter(condition)
         self.model.select()
         tableView = QTableView()
         tableView.setModel(self.model)

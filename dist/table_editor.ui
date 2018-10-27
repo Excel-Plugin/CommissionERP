@@ -398,38 +398,14 @@ QPushButton#closeButton:pressed {
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="actionDataSource"/>
-    <addaction name="actionRule"/>
-    <addaction name="actionAfterSaler"/>
-    <addaction name="actionClient"/>
-    <addaction name="actionManager"/>
+    <addaction name="actionExportExcel"/>
    </widget>
    <addaction name="File"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionDataSource">
+  <action name="actionExportExcel">
    <property name="text">
-    <string>数据源表</string>
-   </property>
-  </action>
-  <action name="actionRule">
-   <property name="text">
-    <string>规则表</string>
-   </property>
-  </action>
-  <action name="actionAfterSaler">
-   <property name="text">
-    <string>售后员表</string>
-   </property>
-  </action>
-  <action name="actionClient">
-   <property name="text">
-    <string>客户编号表</string>
-   </property>
-  </action>
-  <action name="actionManager">
-   <property name="text">
-    <string>主管表</string>
+    <string>导出Excel</string>
    </property>
   </action>
  </widget>
