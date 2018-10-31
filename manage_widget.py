@@ -36,7 +36,7 @@ class CompWidget(QComboBox):
         self.addItems(["等于", "不等于", "大于", "大于或等于", "小于", "小于或等于", "包含", "不包含", "为空值", "不为空值"])
 
     def getCondition(self, name, value):
-        if 'varchar' in columnType[name]:  # 注意：若使用了其他的文本数据类型，这里需要更改
+        if 'text' in columnType[name]:  # 注意：若使用了其他的文本数据类型，这里需要更改
             value = "'" + value + "'"
         conditionDict = {"等于": name+" = "+value, "不等于": name+" != "+value,
                          "大于": name+" > "+value, "大于或等于": name+" >= "+value,
