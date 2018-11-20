@@ -1,11 +1,14 @@
+import os
 import sqlite3
 import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QListWidgetItem, QHBoxLayout, QLabel, QPushButton, QApplication, QHeaderView, \
-    QTableView, QAbstractItemView, QComboBox, QTableWidgetItem
+    QTableView, QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog
 from PyQt5.uic import loadUi
 import resources
+from InterfaceModule import Easyexcel
+from sheet_selector import SheetSelector
 from table_editor import TableEditor
 
 
@@ -65,6 +68,7 @@ class ManageWidget(QWidget):
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
         self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
+        self.importPushButton.clicked.connect(self.importPushButtonClickedSlot)
         self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -113,6 +117,19 @@ class ManageWidget(QWidget):
             value = self.conditionTableWidget.item(i, self.conditionRow['value']).text()
             condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp']).getCondition(name, value)
         self.addTabSignal.emit(condition)
+
+    def importPushButtonClickedSlot(self):
+        filePath, _ = QFileDialog.getOpenFileName(self, "文件选择", os.getcwd(), "Excel Files (*.xls *.xlsx)")
+        if filePath == '':  # 取消导出
+            return
+        filePath = filePath.replace('/', '\\')  # Excel不识别C:/xxx/xxx.xlsx的路径，只识别C:\xxx\xxx.xlsx
+        print(filePath)
+        excel = Easyexcel(filePath, visible=False)
+        if SheetSelector(excel.get_sheet_names()).exec() == QDialog.Accepted:
+            print("ok")
+        else:
+            print("cancel")
+        excel.close()
 
 
 if __name__ == '__main__':
