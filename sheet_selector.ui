@@ -132,6 +132,11 @@ QComboBox QAbstractItemView::item:selected {
      <string>数据表类型</string>
     </property>
    </column>
+   <column>
+    <property name="text">
+     <string>数据表名称</string>
+    </property>
+   </column>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
