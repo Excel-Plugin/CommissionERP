@@ -2,6 +2,7 @@ import os
 import sys
 import traceback
 
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QHeaderView, \
     QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox
@@ -9,6 +10,7 @@ from PyQt5.uic import loadUi
 import resources  # 生成exe时需要此文件
 from InterfaceModule import Easyexcel
 from data_manager import DataManager
+from excel_access import ExcelAccess
 from sheet_selector import SheetSelector
 
 
@@ -46,7 +48,7 @@ class CompComboBox(QComboBox):
                          }
         return conditionDict[self.currentText()]
 
-
+# TODO: 把生成表格改为查看表格;导入过程应该用QProgressDialog显示
 class ManageWidget(QWidget):
     conditionRow = {'logic': 0, 'name': 2, 'comp': 3, 'value': 4}
 
@@ -125,12 +127,16 @@ class ManageWidget(QWidget):
             return
         filePath = filePath.replace('/', '\\')  # Excel不识别C:/xxx/xxx.xlsx的路径，只识别C:\xxx\xxx.xlsx
         print(filePath)
+        access = ExcelAccess()
+        if access.exec() != QDialog.Accepted:
+            return
+        openPassword, editPassword = access.get_passwords()  # 获取用户输入的密码
         try:
-            excel = Easyexcel(filePath, visible=False)
-            sheet_info = []  # 这里一定要是列表，传入的是引用，格式为[(Sheet名, 数据表类型, 数据表名称)]
-            if SheetSelector(excel.get_sheet_names(), sheet_info, self.__dm.get_my_tables('all')).exec() == QDialog.Accepted:
+            excel = Easyexcel(filePath, visible=False, access_password=openPassword, write_res_password=editPassword)
+            selector = SheetSelector(excel.get_sheet_names(), self.__dm.get_my_tables('all'))
+            if selector.exec() == QDialog.Accepted:
                 print("ok")
-                for sheet in sheet_info:
+                for sheet in selector.get_sheet_info():  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
                     sheet_name, table_type, table_name = sheet
                     header_dict, sheet_data = excel.get_sheet(sheet_name)
                     self.__dm.create_table(table_type, table_name, list(header_dict.keys()))

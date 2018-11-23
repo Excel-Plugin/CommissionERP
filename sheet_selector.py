@@ -12,12 +12,11 @@ class SheetsComboBox(QComboBox):
 
 class SheetSelector(QDialog):
 
-    def __init__(self, sheet_names, sheet_info: list, cur_tables: list):
-        """注意sheet_info必须为列表，这样传的才是引用，格式为[(Sheet名, 数据表类型, 数据表名称)]
-        cur_tables为当前数据库中已存在的数据表"""
+    def __init__(self, sheet_names, cur_tables: list):
+        """cur_tables为当前数据库中已存在的数据表的列表"""
         super(SheetSelector, self).__init__()
         loadUi("sheet_selector.ui", self)
-        self.__sheet_info = sheet_info  # 注意：这里传的是引用，之后不能对其进行赋值操作！
+        self.__sheet_info = []  # 注意：sheet_info必须为列表，格式为[(Sheet名, 数据表类型, 数据表名称)]
         self.__cur_tables = cur_tables
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         for sht in sheet_names:
@@ -27,6 +26,9 @@ class SheetSelector(QDialog):
             shtWidget.setFlags(shtWidget.flags() & ~Qt.ItemIsEditable)  # 禁止Sheet名称修改
             self.tableWidget.setItem(rowNumber, 0, shtWidget)
             self.tableWidget.setCellWidget(rowNumber, 1, SheetsComboBox())
+
+    def get_sheet_info(self):
+        return self.__sheet_info
 
     def accept(self):
         indices = []  # 要导入的sheet相关信息
