@@ -231,7 +231,6 @@ class ManageWidget(QWidget):
                     # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
                     dm.insert_data(table_name, sorted(header_dict.keys(), key=lambda x: header_dict[x]),
                                    sheet_data)
-                    time.sleep(20)
                 self.progressSignal.emit(len(sheet_info), "导入完成")
 
             except Exception as err:
