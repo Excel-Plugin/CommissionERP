@@ -44,14 +44,14 @@ class DataManager(object):
         self.__cursor.execute(
             f"insert into meta_table (name, type, create_time) "
             f"values ('{table_name}', '{table_type}', {int(time.time())});")  # 时间戳为秒级
-        # 然后创建表格，在columns中使用双引号将列名引起来以防止有的列名为数字
-        self.__cursor.execute('create table {name} (id integer primary key autoincrement, {columns});'
+        # 然后创建表格，使用双引号将表名和列名引起来以防止有的表名或列名为数字
+        self.__cursor.execute('create table "{name}" (id integer primary key autoincrement, {columns});'
                               .format(name=table_name, columns=", ".join(f'"{c}" text' for c in table_columns)))
         self.__cursor.connection.commit()
 
     def insert_data(self, table_name: str, columns: list, rows: list):
         """向table_name表中插入一行或多行数据，这里rows中每一个元组都按照columns指定的顺序排列"""
-        sql = 'insert into {name} ({columns}) values {rows};' \
+        sql = 'insert into "{name}" ({columns}) values {rows};'\
             .format(name=table_name, columns=', '.join(f'"{c}"' for c in columns),  # 将列名用双引号包起来以防列名为数字
                     rows=', '.join("(" + ", ".join(f"'{d}'" for d in r) + ")" for r in rows))
         self.__cursor.execute(sql)

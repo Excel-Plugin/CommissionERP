@@ -1,11 +1,14 @@
 import os
 import sys
+import threading
 import traceback
+import time
 
+import pythoncom
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QHeaderView, \
-    QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox
+    QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox, QProgressDialog
 from PyQt5.uic import loadUi
 import resources  # 生成exe时需要此文件
 from InterfaceModule import Easyexcel
@@ -39,16 +42,18 @@ class CompComboBox(QComboBox):
         column_types：列名->列数据类型"""
         if 'text' in column_types[name]:  # 注意：若使用了其他的文本数据类型，这里需要更改
             value = "'" + value + "'"
-        conditionDict = {"等于": name+" = "+value, "不等于": name+" != "+value,
-                         "大于": name+" > "+value, "大于或等于": name+" >= "+value,
-                         "小于": name+" < "+value, "小于或等于": name+" <= "+value,
+        conditionDict = {"等于": name + " = " + value, "不等于": name + " != " + value,
+                         "大于": name + " > " + value, "大于或等于": name + " >= " + value,
+                         "小于": name + " < " + value, "小于或等于": name + " <= " + value,
                          # 注意：若关系为“包含”，则name必定为字符串相关类型，则value必定会两侧加''，所以下面需要去掉
-                         "包含": name+" like '%"+value[1:-1]+"%' ", "不包含": name+"not like '%"+value[1:-1]+"%' ",
-                         "为空值": name+" is null ", "不为空值": name+" is not null "
+                         "包含": name + " like '%" + value[1:-1] + "%' ",
+                         "不包含": name + "not like '%" + value[1:-1] + "%' ",
+                         "为空值": name + " is null ", "不为空值": name + " is not null "
                          }
         return conditionDict[self.currentText()]
 
-# TODO: 把生成表格改为查看表格;导入过程应该用QProgressDialog显示
+
+# TODO: 把生成表格改为查看表格
 class ManageWidget(QWidget):
     conditionRow = {'logic': 0, 'name': 2, 'comp': 3, 'value': 4}
 
@@ -117,9 +122,12 @@ class ManageWidget(QWidget):
                 condition += " and "
             name = self.conditionTableWidget.cellWidget(i, self.conditionRow['name']).currentText()
             value = self.conditionTableWidget.item(i, self.conditionRow['value']).text()
-            condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp'])\
+            condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp']) \
                 .getCondition(self.__dm.get_column_types('salesman'), name, value)  # TODO: 这里表名应为要查看序时簿的表名
         self.addTabSignal.emit(condition)
+
+    progressSignal = QtCore.pyqtSignal(object)  # 进度框相关信息，注意参数只有一个object
+    errorSignal = QtCore.pyqtSignal(object)  # 子线程错误信息
 
     def importPushButtonClickedSlot(self):
         filePath, _ = QFileDialog.getOpenFileName(self, "文件选择", os.getcwd(), "Excel Files (*.xls *.xlsx)")
@@ -134,24 +142,50 @@ class ManageWidget(QWidget):
         try:
             excel = Easyexcel(filePath, visible=False, access_password=openPassword, write_res_password=editPassword)
             selector = SheetSelector(excel.get_sheet_names(), self.__dm.get_my_tables('all'))
+            excel.close()
             if selector.exec() == QDialog.Accepted:
-                print("ok")
-                for sheet in selector.get_sheet_info():  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
-                    sheet_name, table_type, table_name = sheet
-                    header_dict, sheet_data = excel.get_sheet(sheet_name)
-                    self.__dm.create_table(table_type, table_name, list(header_dict.keys()))
-                    # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
-                    self.__dm.insert_data(table_name, sorted(header_dict.keys(), key=lambda x: header_dict[x]), sheet_data)
-                    QMessageBox.information(self, "数据表导入成功", f"数据表'{sheet[2]}'已成功导入")
+                sheet_info = selector.get_sheet_info()  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
+                progressDlg = QProgressDialog("正在导入数据表", "Cancel", 0, len(sheet_info), self)
+                progressDlg.setWindowTitle("正在导入")  # TODO: 对取消的处理
+                progressDlg.setAutoClose(True)
+                progressDlg.show()
+
+                def slot(info):
+                    progress, sheet_name, sheet_len = info
+                    progressDlg.setValue(progress)
+                    progressDlg.setLabelText(f"正在导入工作簿'{sheet_name}'({progress}/{sheet_len})")
+                    if progress == progressDlg.maximum():
+                        QMessageBox.information(self, "数据表导入成功", f"数据表'{filePath}'已成功导入")
+
+                self.progressSignal.connect(slot)
+
+                def error_slot(err):
+                    QMessageBox.warning(self, "导入出错", str(err))
+
+                self.errorSignal.connect(error_slot)
+
+                def process():
+                    try:
+                        pythoncom.CoInitialize()
+                        ex = Easyexcel(filePath, visible=False, access_password=openPassword,
+                                       write_res_password=editPassword)
+                        dm = DataManager()  # 子线程要创建一个单独的数据管理类
+                        for i, sheet in enumerate(sheet_info):  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
+                            sheet_name, table_type, table_name = sheet
+                            header_dict, sheet_data = ex.get_sheet(sheet_name)
+                            dm.create_table(table_type, table_name, list(header_dict.keys()))
+                            # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
+                            dm.insert_data(table_name, sorted(header_dict.keys(), key=lambda x: header_dict[x]),
+                                           sheet_data)
+                            self.progressSignal.emit((i + 1, sheet_name, len(sheet_info)))
+                            self.progressSignal.emit((i + 1, "test", len(sheet_info)))
+                    except Exception as err:
+                        traceback.print_exc(err)
+                        self.errorSignal.emit(err)
+
+                threading.Thread(target=process, daemon=True).start()
             else:
                 print("cancel")
-            excel.close()
         except Exception as e:
             QMessageBox.warning(self, str(e), traceback.format_exc())
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    myShow = ManageWidget()
-    myShow.show()
-    sys.exit(app.exec_())
