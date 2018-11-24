@@ -182,7 +182,6 @@ class ManageWidget(QWidget):
                     excel = Easyexcel(filePath, visible=False, access_password=openPassword, write_res_password=editPassword)
                     sheet_names = excel.get_sheet_names()
                     excel.close()
-                    time.sleep(20)
                     self.loadingSignal.emit(sheet_names)
                 except Exception as e:
                     traceback.print_exc(e)  # TODO: 这里在traceback的时候会再次抛出异常
