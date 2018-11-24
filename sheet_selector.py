@@ -39,13 +39,11 @@ class SheetSelector(QDialog):
                     QMessageBox.warning(self, "表单不完整", "数据表名称有空值，无法导入")
                     return
                 # 确保不会添加已存在的表名，且添加的表名之间不重复
-                print(self.tableWidget.item(i, 2).text())
                 if self.tableWidget.item(i, 2).text() in existed_tables:
                     QMessageBox.warning(self, "数据表名称已存在", f"数据表'{self.tableWidget.item(i, 2).text()}'已存在，不能重复添加")
                     return
                 else:
                     existed_tables.add(self.tableWidget.item(i, 2).text())
-                print(self.tableWidget.item(i, 2).text())
                 indices.append(i)
         for i in indices:
             sheet_name = self.tableWidget.item(i, 0).text()

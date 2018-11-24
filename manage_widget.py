@@ -1,4 +1,5 @@
 import os
+import queue
 import sys
 import threading
 import traceback
@@ -6,14 +7,15 @@ import time
 
 import pythoncom
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject, QMetaMethod
 from PyQt5.QtWidgets import QWidget, QApplication, QHeaderView, \
-    QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox, QProgressDialog
+    QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox, QProgressDialog, QSizePolicy
 from PyQt5.uic import loadUi
 import resources  # 生成exe时需要此文件
 from InterfaceModule import Easyexcel
 from data_manager import DataManager
 from excel_access import ExcelAccess
+from load_widget import LoadWidget
 from sheet_selector import SheetSelector
 
 
@@ -53,7 +55,7 @@ class CompComboBox(QComboBox):
         return conditionDict[self.currentText()]
 
 
-# TODO: 把生成表格改为查看表格
+# TODO: 把生成表格改为查看表格，再加一个删除表格
 class ManageWidget(QWidget):
     conditionRow = {'logic': 0, 'name': 2, 'comp': 3, 'value': 4}
 
@@ -126,66 +128,115 @@ class ManageWidget(QWidget):
                 .getCondition(self.__dm.get_column_types('salesman'), name, value)  # TODO: 这里表名应为要查看序时簿的表名
         self.addTabSignal.emit(condition)
 
-    progressSignal = QtCore.pyqtSignal(object)  # 进度框相关信息，注意参数只有一个object
-    errorSignal = QtCore.pyqtSignal(object)  # 子线程错误信息
+    loadingSignal = QtCore.pyqtSignal(object)  # 读取sheet的进度框，可能为True表示完成，也可能为Exception表示出错
 
     def importPushButtonClickedSlot(self):
+        self.importPushButton.setEnabled(False)  # 处理期间不能点击
         filePath, _ = QFileDialog.getOpenFileName(self, "文件选择", os.getcwd(), "Excel Files (*.xls *.xlsx)")
         if filePath == '':  # 取消导出
+            self.importPushButton.setEnabled(True)
             return
         filePath = filePath.replace('/', '\\')  # Excel不识别C:/xxx/xxx.xlsx的路径，只识别C:\xxx\xxx.xlsx
         print(filePath)
         access = ExcelAccess()
         if access.exec() != QDialog.Accepted:
+            self.importPushButton.setEnabled(True)
             return
         openPassword, editPassword = access.get_passwords()  # 获取用户输入的密码
         try:
-            excel = Easyexcel(filePath, visible=False, access_password=openPassword, write_res_password=editPassword)
-            selector = SheetSelector(excel.get_sheet_names(), self.__dm.get_my_tables('all'))
-            excel.close()
-            if selector.exec() == QDialog.Accepted:
-                sheet_info = selector.get_sheet_info()  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
-                progressDlg = QProgressDialog("正在导入数据表", "Cancel", 0, len(sheet_info), self)
-                progressDlg.setWindowTitle("正在导入")  # TODO: 对取消的处理
-                progressDlg.setAutoClose(True)
-                progressDlg.show()
+            # 显示正在加载中
+            loadWgt = LoadWidget(parent=self)
+            loadWgt.show()
 
-                def slot(info):
-                    progress, sheet_name, sheet_len = info
-                    progressDlg.setValue(progress)
-                    progressDlg.setLabelText(f"正在导入工作簿'{sheet_name}'({progress}/{sheet_len})")
-                    if progress == progressDlg.maximum():
-                        QMessageBox.information(self, "数据表导入成功", f"数据表'{filePath}'已成功导入")
+            try:
+                self.loadingSignal.disconnect()  # 断开与self.loadingSignal所关联的所有槽（主要是断开以前关联过的槽函数）
+            except Exception:
+                pass  # 在第一次disconnect时，由于没有与self.loadingSignal关联的槽，会抛出异常，这是正常情况，什么也不需要做
 
-                self.progressSignal.connect(slot)
+            def loading_slot(info):
+                if isinstance(info, list):
+                    if info:
+                        try:
+                            print("get signal:"+str(info))
+                            loadWgt.close()
+                            selector = SheetSelector(info, self.__dm.get_my_tables('all'))
+                            # 导入数据表
+                            if selector.exec() == QDialog.Accepted:
+                                sheet_info = selector.get_sheet_info()  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
+                                if len(sheet_info) > 0:  # 若没有要导入的，则为空（这里不要直接返回，此函数结尾要恢复按钮状态）
+                                    self.importSheetsToDb(filePath, openPassword, editPassword, sheet_info)
+                                    return  # 这里由于非阻塞，所以线程尚未完成就会返回，此时按钮应该仍为不可点击状态，应子线程完成的槽函数内恢复状态
+                        except Exception as e:
+                            QMessageBox.warning(self, "导入出错", str(e))
+                            traceback.print_exc(e)
+                elif isinstance(info, Exception):
+                    QMessageBox.warning(self, "读取出错", str(info))
+                self.importPushButton.setEnabled(True)  # 处理结束之后恢复可以点击的状态
 
-                def error_slot(err):
-                    QMessageBox.warning(self, "导入出错", str(err))
+            self.loadingSignal.connect(loading_slot)
 
-                self.errorSignal.connect(error_slot)
+            def loading_work():
+                try:
+                    # 读取数据表的sheet信息
+                    pythoncom.CoInitialize()
+                    excel = Easyexcel(filePath, visible=False, access_password=openPassword, write_res_password=editPassword)
+                    sheet_names = excel.get_sheet_names()
+                    excel.close()
+                    time.sleep(20)
+                    self.loadingSignal.emit(sheet_names)
+                except Exception as e:
+                    traceback.print_exc(e)  # TODO: 这里在traceback的时候会再次抛出异常
+                    self.loadingSignal.emit(e)
 
-                def process():
-                    try:
-                        pythoncom.CoInitialize()
-                        ex = Easyexcel(filePath, visible=False, access_password=openPassword,
-                                       write_res_password=editPassword)
-                        dm = DataManager()  # 子线程要创建一个单独的数据管理类
-                        for i, sheet in enumerate(sheet_info):  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
-                            sheet_name, table_type, table_name = sheet
-                            header_dict, sheet_data = ex.get_sheet(sheet_name)
-                            dm.create_table(table_type, table_name, list(header_dict.keys()))
-                            # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
-                            dm.insert_data(table_name, sorted(header_dict.keys(), key=lambda x: header_dict[x]),
-                                           sheet_data)
-                            self.progressSignal.emit((i + 1, sheet_name, len(sheet_info)))
-                            self.progressSignal.emit((i + 1, "test", len(sheet_info)))
-                    except Exception as err:
-                        traceback.print_exc(err)
-                        self.errorSignal.emit(err)
+            threading.Thread(target=loading_work, daemon=True).start()
+        except Exception as exp:
+            QMessageBox.warning(self, str(exp), traceback.format_exc(exp))
 
-                threading.Thread(target=process, daemon=True).start()
-            else:
-                print("cancel")
-        except Exception as e:
-            QMessageBox.warning(self, str(e), traceback.format_exc())
+    # 如下两个信号只与importSheetsToDb有关
+    progressSignal = QtCore.pyqtSignal((int, str))  # 进度框相关信息，注意参数只有一个object
+    errorSignal = QtCore.pyqtSignal(object)  # 子线程错误信息
+
+    def importSheetsToDb(self, filePath, openPassword, editPassword, sheet_info):
+        progressDlg = QProgressDialog("正在读取数据表，请不要关闭此窗口", "Cancel", 0, len(sheet_info), self)
+        progressDlg.setWindowTitle("正在导入")  # 注意：这里即使关闭窗口，导入过程仍然会正常进行
+        progressDlg.setAutoClose(True)
+        progressDlg.setWindowModality(Qt.ApplicationModal)
+        progressDlg.show()
+
+        def slot(value, text):
+            progressDlg.setValue(value)
+            progressDlg.setLabelText(text)
+            if value == progressDlg.maximum():
+                QMessageBox.information(self, "数据表导入成功", f"数据表'{filePath}'已成功导入")
+                self.importPushButton.setEnabled(True)
+
+        self.progressSignal.connect(slot)
+
+        def error_slot(err):
+            QMessageBox.warning(self, "导入出错", str(err))
+
+        self.errorSignal.connect(error_slot)
+
+        def process():
+            try:
+                pythoncom.CoInitialize()
+                ex = Easyexcel(filePath, visible=False, access_password=openPassword,
+                               write_res_password=editPassword)
+                dm = DataManager()  # 子线程要创建一个单独的数据管理类
+                for i, sheet in enumerate(sheet_info):  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
+                    sheet_name, table_type, table_name = sheet
+                    self.progressSignal.emit(i, f"正在导入工作簿'{sheet_name}'，请不要关闭此窗口({i}/{len(sheet_info)})")
+                    header_dict, sheet_data = ex.get_sheet(sheet_name)
+                    dm.create_table(table_type, table_name, list(header_dict.keys()))
+                    # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
+                    dm.insert_data(table_name, sorted(header_dict.keys(), key=lambda x: header_dict[x]),
+                                   sheet_data)
+                    time.sleep(20)
+                self.progressSignal.emit(len(sheet_info), "导入完成")
+
+            except Exception as err:
+                traceback.print_exc(err)
+                self.errorSignal.emit(err)
+
+        threading.Thread(target=process, daemon=True).start()
 
