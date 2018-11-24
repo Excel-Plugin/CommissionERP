@@ -196,10 +196,14 @@ class ManageWidget(QWidget):
     errorSignal = QtCore.pyqtSignal(object)  # 子线程错误信息
 
     def importSheetsToDb(self, filePath, openPassword, editPassword, sheet_info):
-        progressDlg = QProgressDialog("正在读取数据表，请不要关闭此窗口", "Cancel", 0, len(sheet_info), self)
+        progressDlg = QProgressDialog("正在读取数据表", "Cancel", 0, len(sheet_info), self)
         progressDlg.setWindowTitle("正在导入")  # 注意：这里即使关闭窗口，导入过程仍然会正常进行
         progressDlg.setAutoClose(True)
         progressDlg.setWindowModality(Qt.ApplicationModal)
+        progressDlg.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
+        progressDlg.setStyleSheet("""QDialog{ border: 1px solid rgb(85,85,85); } 
+        QProgressBar{border: 2px solid grey; border-radius: 5px; color: black; text-align: center;}""")
+        progressDlg.setCancelButton(None)
         progressDlg.show()
 
         def slot(value, text):
@@ -224,7 +228,7 @@ class ManageWidget(QWidget):
                 dm = DataManager()  # 子线程要创建一个单独的数据管理类
                 for i, sheet in enumerate(sheet_info):  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
                     sheet_name, table_type, table_name = sheet
-                    self.progressSignal.emit(i, f"正在导入工作簿'{sheet_name}'，请不要关闭此窗口({i}/{len(sheet_info)})")
+                    self.progressSignal.emit(i, f"正在导入工作簿'{sheet_name}'({i}/{len(sheet_info)})")
                     header_dict, sheet_data = ex.get_sheet(sheet_name)
                     dm.create_table(table_type, table_name, list(header_dict.keys()))
                     # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
