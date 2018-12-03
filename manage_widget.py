@@ -1,9 +1,6 @@
+import logging
 import os
-import queue
-import sys
 import threading
-import traceback
-import time
 
 import pythoncom
 from PyQt5 import QtCore
@@ -159,7 +156,7 @@ class ManageWidget(QWidget):
                         try:
                             print("get signal:"+str(info))
                             loadWgt.close()
-                            selector = SheetSelector(info, self.__dm.get_my_tables('all'))
+                            selector = SheetSelector(info, self.__dm.get_tables())
                             # 导入数据表
                             if selector.exec() == QDialog.Accepted:
                                 sheet_info = selector.get_sheet_info()  # sheet_info格式为[(Sheet名, 数据表类型, 数据表名称)]
@@ -168,9 +165,10 @@ class ManageWidget(QWidget):
                                     return  # 这里由于非阻塞，所以线程尚未完成就会返回，此时按钮应该仍为不可点击状态，应子线程完成的槽函数内恢复状态
                         except Exception as e:
                             QMessageBox.warning(self, "导入出错", str(e))
-                            traceback.print_exc(e)
+                            logging.exception(e)
                 elif isinstance(info, Exception):
                     QMessageBox.warning(self, "读取出错", str(info))
+                    loadWgt.close()
                 self.importPushButton.setEnabled(True)  # 处理结束之后恢复可以点击的状态
 
             self.loadingSignal.connect(loading_slot)
@@ -184,12 +182,12 @@ class ManageWidget(QWidget):
                     excel.close()
                     self.loadingSignal.emit(sheet_names)
                 except Exception as e:
-                    traceback.print_exc(e)  # TODO: 这里在traceback的时候会再次抛出异常
+                    logging.exception(e)
                     self.loadingSignal.emit(e)
 
             threading.Thread(target=loading_work, daemon=True).start()
         except Exception as exp:
-            QMessageBox.warning(self, str(exp), traceback.format_exc(exp))
+            QMessageBox.warning(self, "导入出错", str(exp))
 
     # 如下两个信号只与importSheetsToDb有关
     progressSignal = QtCore.pyqtSignal((int, str))  # 进度框相关信息，注意参数只有一个object
@@ -216,6 +214,8 @@ class ManageWidget(QWidget):
         self.progressSignal.connect(slot)
 
         def error_slot(err):
+            progressDlg.close()
+            self.importPushButton.setEnabled(True)
             QMessageBox.warning(self, "导入出错", str(err))
 
         self.errorSignal.connect(error_slot)
@@ -230,14 +230,16 @@ class ManageWidget(QWidget):
                     sheet_name, table_type, table_name = sheet
                     self.progressSignal.emit(i, f"正在导入工作簿'{sheet_name}'({i}/{len(sheet_info)})")
                     header_dict, sheet_data = ex.get_sheet(sheet_name)
-                    dm.create_table(table_type, table_name, list(header_dict.keys()))
+                    # 过滤掉列名中的特殊字符以防导致SQL命令格式错误
+                    f_header_dict = {k.replace('\n', ''): v for k, v in header_dict.items()}
+                    columns = sorted(f_header_dict.keys(), key=lambda x: f_header_dict[x])  # 与Excel表格列顺序相同
+                    dm.create_table(table_type, table_name, columns)
                     # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
-                    dm.insert_data(table_name, sorted(header_dict.keys(), key=lambda x: header_dict[x]),
-                                   sheet_data)
+                    dm.insert_data(table_name, columns, sheet_data)
                 self.progressSignal.emit(len(sheet_info), "导入完成")
 
             except Exception as err:
-                traceback.print_exc(err)
+                logging.exception(err)
                 self.errorSignal.emit(err)
 
         threading.Thread(target=process, daemon=True).start()
