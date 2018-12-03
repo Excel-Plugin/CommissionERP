@@ -27,12 +27,13 @@ import win32timezone  # 程序打包需要用到这个包，否则会报错
 
 class Easyexcel:
     def __init__(self, filepath, visible=True, access_password=None, write_res_password=None):
-        if not os.path.isfile(filepath):  # 文件名不存在则新建文件
-            app = win32com.client.Dispatch('Excel.Application')
-            app.Workbooks.Add().SaveAs(filepath)
         self.xlApp = win32com.client.Dispatch('Excel.Application')
         self.xlApp.Visible = visible
         self.filepath = filepath  # 文件完整路径
+        if not os.path.isfile(filepath):  # 文件名不存在则新建文件
+            xlBook = self.xlApp.Workbooks.Add()
+            xlBook.SaveAs(filepath)
+            xlBook.Close()
         self.xlBook = self.xlApp.Workbooks.Open(Filename=filepath, UpdateLinks=2, ReadOnly=False, Format=None,
                                                 Password=access_password, WriteResPassword=write_res_password)
         self.filename = os.path.basename(filepath)  # 文件名
@@ -78,6 +79,8 @@ class Easyexcel:
         for i, name in enumerate(header):
             if name not in header_dict:  # 表头重复者以第一个出现的为准
                 header_dict[name] = i
+            else:
+                raise Exception(f"表头中有多个'{name}'，请删除重复的列名后重新导入")
 
         # 读取表中数据到data中
         sheet_data = []
@@ -90,9 +93,12 @@ class Easyexcel:
 
         return header_dict, sheet_data
 
-    def close(self):
-        self.xlBook.Close(self.filepath)
-        del self.xlApp
+    def close(self, saveChanges=True):
+        """默认保存所做更改。实际测试中即使这里填False，Excel也仍然会保存修改"""
+        self.xlBook.Close(SaveChanges=saveChanges)
+
+    def quit(self):
+        self.xlApp.Application.Quit()
 
     def save(self):
         self.xlBook.Save()
