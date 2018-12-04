@@ -80,7 +80,7 @@ class Easyexcel:
             if name not in header_dict:  # 表头重复者以第一个出现的为准
                 header_dict[name] = i
             else:
-                raise Exception(f"表头中有多个'{name}'，请删除重复的列名后重新导入")
+                raise Exception(f"表头中有多个'{name}'(第{header_dict[name]}列和第{i}列)，请删除重复的列名后重新导入")
 
         # 读取表中数据到data中
         sheet_data = []

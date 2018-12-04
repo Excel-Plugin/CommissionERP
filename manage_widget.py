@@ -231,6 +231,10 @@ class ManageWidget(QWidget):
                     sheet_name, table_type, table_name = sheet
                     self.progressSignal.emit(i, f"正在导入工作簿'{sheet_name}'({i}/{len(sheet_info)})")
                     header_dict, sheet_data = ex.get_sheet(sheet_name)
+                    flag, msg = ExcelCheck.characters_check(sheet_data)
+                    if not flag:
+                        ex.close()
+                        raise Exception(msg)
                     if table_type == '售后员提成明细':
                         sheet_data = ExcelCheck.formatted_after_sales(header_dict, sheet_data)
                         dm.create_table(table_type, table_name, ExcelCheck.headers["售后员提成明细"])

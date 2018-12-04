@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # TODO：各种类型的表都应该有一个类
 import logging
+import time
 
 
 class ExcelCheck(object):
@@ -13,6 +14,7 @@ class ExcelCheck(object):
                "规则表": [],
                "指导价表": [],
                "主管表": [],
+               # TODO: 所给的表里业务员提成明细很多非法字符，没有进行完整导入测试
                "业务员提成明细": ["业务", "开票日期", "客户编号", "客户名称",
                            "开票金额（含税）", "发票号码", "到期时间", "款期", "付款日",
                            "付款金额（含税）", "付款未税金额", "到款天数", "未税服务费", "客户类型",
@@ -28,6 +30,21 @@ class ExcelCheck(object):
                            "单价", "含税金额", "重量", "单桶公斤数量", "指导价",
                            "单号", "出货时间", "出货地点"]
                }
+
+    @staticmethod
+    def characters_check(sheet_data: list):
+        """检查sheet_data中的数据是否存在非法字符（英文单引号'、双引号"和英文括号()）
+        sheet_data为二维数组"""
+        print(f"开始检查({time.time()})")
+        invalid_set = {"'", '"', "(", ")"}
+        for i, row in enumerate(sheet_data):
+            for j, cell in enumerate(row):
+                for c in invalid_set:
+                    if c in cell:
+                        print(f"出错({time.time()})")
+                        return False, f"第{i}行第{j}列的单元格存在非法字符{c}，请将其改为相应的中文字符后重新导入"
+        print(f"检查完成({time.time()})")
+        return True, "ok"
 
     @staticmethod
     def formatted_after_sales(org_dict: dict, org_data: list):
