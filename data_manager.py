@@ -51,8 +51,13 @@ class DataManager(object):
 
     def insert_data(self, table_name: str, columns: list, rows: list):
         """向table_name表中插入一行或多行数据，这里rows中每一个元组都按照columns指定的顺序排列"""
-        sql = 'insert into "{name}" ({columns}) values {rows};'\
-            .format(name=table_name, columns=', '.join(f'"{c}"' for c in columns),  # 将列名用双引号包起来以防列名为数字
-                    rows=', '.join("(" + ", ".join(f"'{d}'" for d in r) + ")" for r in rows))
-        self.__cursor.execute(sql)
-        self.__cursor.connection.commit()
+        for i, row in enumerate(rows):
+            try:
+                sql = 'insert into "{name}" ({columns}) values ({row});'\
+                    .format(name=table_name, columns=', '.join(f'"{c}"' for c in columns),  # 将列名用双引号包起来以防列名为数字
+                            row=", ".join(f"'{d}'" for d in row))
+                # print(sql)
+                self.__cursor.execute(sql)
+                self.__cursor.connection.commit()
+            except Exception as e:
+                raise Exception(f"执行第{i}行对应的SQL语句时出错：{str(e)}\n{sql}")

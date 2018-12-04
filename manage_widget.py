@@ -12,6 +12,7 @@ import resources  # 生成exe时需要此文件
 from InterfaceModule import Easyexcel
 from data_manager import DataManager
 from excel_access import ExcelAccess
+from excel_check import ExcelCheck
 from load_widget import LoadWidget
 from sheet_selector import SheetSelector
 
@@ -230,12 +231,18 @@ class ManageWidget(QWidget):
                     sheet_name, table_type, table_name = sheet
                     self.progressSignal.emit(i, f"正在导入工作簿'{sheet_name}'({i}/{len(sheet_info)})")
                     header_dict, sheet_data = ex.get_sheet(sheet_name)
-                    # 过滤掉列名中的特殊字符以防导致SQL命令格式错误
-                    f_header_dict = {k.replace('\n', ''): v for k, v in header_dict.items()}
-                    columns = sorted(f_header_dict.keys(), key=lambda x: f_header_dict[x])  # 与Excel表格列顺序相同
-                    dm.create_table(table_type, table_name, columns)
-                    # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
-                    dm.insert_data(table_name, columns, sheet_data)
+                    if table_type == '售后员提成明细':
+                        sheet_data = ExcelCheck.formatted_after_sales(header_dict, sheet_data)
+                        dm.create_table(table_type, table_name, ExcelCheck.headers["售后员提成明细"])
+                        dm.insert_data(table_name, ExcelCheck.headers["售后员提成明细"], sheet_data)
+                    else:
+                        # 过滤掉列名中的特殊字符以防导致SQL命令格式错误
+                        f_header_dict = {k.replace('\n', ''): v for k, v in header_dict.items()}
+                        columns = sorted(f_header_dict.keys(), key=lambda x: f_header_dict[x])  # 与Excel表格列顺序相同
+                        dm.create_table(table_type, table_name, columns)
+                        # 此处将表头按照顺序排列。如果header_dict和sheet_data不匹配的话可能会出问题
+                        dm.insert_data(table_name, columns, sheet_data)
+                ex.close()
                 self.progressSignal.emit(len(sheet_info), "导入完成")
 
             except Exception as err:
