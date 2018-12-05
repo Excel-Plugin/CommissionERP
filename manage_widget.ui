@@ -267,8 +267,18 @@ QPushButton:hover{
 
 QHeaderView::section::horizontal{
 	color: rgb(105, 164, 240);
+	text-align: center;
 }
 
+QPushButton{
+	background: transparent;
+	border: none;
+	font-family: &quot;微软雅黑&quot;;
+}
+
+QPushButton:hover{
+	color: rgb(85, 170, 255);
+}
 </string>
      </property>
      <property name="gridStyle">

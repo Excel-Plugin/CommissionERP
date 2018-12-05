@@ -31,8 +31,9 @@ class TableEditor(QMainWindow):
         self.exportFinishSignal.connect(self.exportFinishSlot)
         self.exportErrorSignal.connect(self.exportErrorSlot)
 
-    def addTablePage(self, condition):
-        self.tabWidget.addTab(TablePage(self.db, 'salesman', condition), "序时簿" + str(self.tabWidget.count() + 1))
+    def addTablePage(self, info):
+        table_name, condition = info
+        self.tabWidget.addTab(TablePage(self.db, table_name, condition), "序时簿" + str(self.tabWidget.count() + 1))
         self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
         self.show()
 

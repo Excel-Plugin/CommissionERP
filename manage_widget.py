@@ -1,13 +1,14 @@
 import logging
 import os
 import threading
+import time
 
 import pythoncom
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QObject, QMetaMethod
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QApplication, QHeaderView, \
     QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox, QProgressDialog, QSizePolicy, \
-    QListWidgetItem
+    QListWidgetItem, QPushButton
 from PyQt5.uic import loadUi
 import resources  # 生成exe时需要此文件
 from InterfaceModule import Easyexcel
@@ -54,6 +55,16 @@ class CompComboBox(QComboBox):
         return conditionDict[self.currentText()]
 
 
+class TableNamePushButton(QPushButton):
+    doubleClickSignal = pyqtSignal(object)  # 这里传的是一个元组(表名, 条件)
+
+    def __init__(self, name):
+        super(TableNamePushButton, self).__init__(name)
+
+    def mouseDoubleClickEvent(self, a0: QtGui.QMouseEvent):
+        self.doubleClickSignal.emit(self.text())
+
+
 # TODO: 把生成表格改为查看表格，再加一个删除表格
 class ManageWidget(QWidget):
     conditionRow = {'logic': 0, 'name': 2, 'comp': 3, 'value': 4}
@@ -75,14 +86,16 @@ class ManageWidget(QWidget):
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
         self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
+        # 表格类型选择初始化为"全部表格"
         items = [QListWidgetItem(n) for n in ExcelCheck.headers.keys()]  # 注意："全部表格"直接放在UI里面了
         for item in items:
             item.setTextAlignment(Qt.AlignCenter)
             self.selectListWidget.addItem(item)
-        self.selectListWidget.setCurrentRow(0)
         self.selectListWidget.currentItemChanged.connect(self.changeListTableSlot)
+        self.selectListWidget.setCurrentRow(0)  # 设置选中项放在connect之后，这样就会调用changeListTableSlot来初始化右侧表格
         self.importPushButton.clicked.connect(self.importPushButtonClickedSlot)
-        self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
+        # 表格列表初始化为全部表格的列表
+        self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         # 序时簿查看page2
@@ -94,7 +107,27 @@ class ManageWidget(QWidget):
 
     def changeListTableSlot(self):
         """左侧所选表格类型改变后会触发此函数，用于更新右侧表格listTableWidget列表内容"""
-        print(f"change to {self.selectListWidget.currentItem()}")
+        for i in reversed(range(self.listTableWidget.rowCount())):  # 清空表格
+            self.listTableWidget.removeRow(i)
+        info_list = self.__dm.get_my_tables_info(self.selectListWidget.currentItem().text())
+        for table_info in info_list:
+            table_name, table_type, create_time = table_info  # 每个元素为一个元组(表名,类型,秒级时间戳)
+            rowNumber = self.listTableWidget.rowCount()
+            self.listTableWidget.insertRow(rowNumber)
+            nameItem = TableNamePushButton(table_name)
+            nameItem.doubleClickSignal.connect(self.tableNameDoubleClickedSlot)
+            self.listTableWidget.setCellWidget(rowNumber, 0, nameItem)
+            typeItem = QTableWidgetItem(table_type)
+            typeItem.setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+            typeItem.setFlags(typeItem.flags() & ~Qt.ItemIsEditable)  # 设置不可修改
+            self.listTableWidget.setItem(rowNumber, 1, typeItem)
+            timeItem = QTableWidgetItem(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(create_time)))
+            timeItem.setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+            timeItem.setFlags(timeItem.flags() & ~Qt.ItemIsEditable)  # 设置不可修改
+            self.listTableWidget.setItem(rowNumber, 2, timeItem)
+
+    def tableNameDoubleClickedSlot(self, name):
+        self.addTabSignal.emit((name, ""))
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
@@ -135,7 +168,7 @@ class ManageWidget(QWidget):
             value = self.conditionTableWidget.item(i, self.conditionRow['value']).text()
             condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp']) \
                 .getCondition(self.__dm.get_column_types('salesman'), name, value)  # TODO: 这里表名应为要查看序时簿的表名
-        self.addTabSignal.emit(condition)
+        self.addTabSignal.emit(('salesman', condition))
 
     loadingSignal = QtCore.pyqtSignal(object)  # 读取sheet的进度框，可能为True表示完成，也可能为Exception表示出错
 

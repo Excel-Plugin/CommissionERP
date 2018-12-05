@@ -21,12 +21,21 @@ class DataManager(object):
 
     def get_my_tables(self, my_type: str) -> list:
         """根据表的类型获取数据表名"""
-        if my_type == 'all':
+        if my_type == '全部表格':
             sql = "select name from meta_table"
         else:
             sql = f"select name from meta_table where type = '{my_type}'"
         self.__cursor.execute(sql)
         return [t[0] for t in self.__cursor.fetchall()]
+
+    def get_my_tables_info(self, my_type: str) -> list:
+        """根据表的类型获取保存在meta_table中数据表相关信息，每个元素为一个元组(表名,类型,秒级时间戳)"""
+        if my_type == '全部表格':
+            sql = "select * from meta_table"
+        else:
+            sql = f"select * from meta_table where type = '{my_type}'"
+        self.__cursor.execute(sql)
+        return self.__cursor.fetchall()
 
     def get_columns(self, table_name: str) -> list:
         self.__cursor.execute('pragma table_info(' + table_name + ')')
