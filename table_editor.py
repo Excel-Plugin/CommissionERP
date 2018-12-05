@@ -26,6 +26,8 @@ class TableEditor(QMainWindow):
         self.db = QSqlDatabase.addDatabase("QSQLITE")
         self.db.setDatabaseName('test.db')
         self.db.open()  # 开启数据库连接
+        self.tabWidget.setTabsClosable(True)
+        self.tabWidget.tabCloseRequested.connect(self.closeTabPage)
         self.addTabSignal.connect(self.addTablePage)
         self.actionExportExcel.triggered.connect(self.exportExcelSlot)
         self.exportFinishSignal.connect(self.exportFinishSlot)
@@ -36,6 +38,9 @@ class TableEditor(QMainWindow):
         self.tabWidget.addTab(TablePage(self.db, table_name, condition), "序时簿" + str(self.tabWidget.count() + 1))
         self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
         self.show()
+
+    def closeTabPage(self, index):
+        self.tabWidget.removeTab(index)
 
     def exportExcelSlot(self):
         if self.tabWidget.count() <= 0:
