@@ -99,6 +99,8 @@ class ManageWidget(QWidget):
         self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
         self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        # 业务表生成page1
+        self.cmsTableGenPushButton.clicked.connect(self.cmsTableGenPushButtonClickedSlot)
         # 序时簿查看page2
         self.conditionTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.conditionTableWidget.removeRow(0)
@@ -140,6 +142,13 @@ class ManageWidget(QWidget):
 
     def tableNameDoubleClickedSlot(self, name):
         self.addTabSignal.emit((name, ""))
+
+    def cmsTableGenPushButtonClickedSlot(self):
+        """槽函数：点击生成提成表单按钮"""
+        if self.cmsLineEdit.text() == '' and self.asCmsLineEdit.text() == '':
+            QMessageBox.warning(self, "无法生成", "业务员提成明细和售后员提成明细均为空，请填写要生成的表单名称")
+            return
+        # TODO: 调用CommissionCalculator项目中计算提成的代码
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
