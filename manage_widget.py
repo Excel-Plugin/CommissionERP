@@ -84,6 +84,7 @@ class ManageWidget(QWidget):
         self.tableGeneratePushButton.clicked.connect(self.tableGeneratePushButtonClickedSlot)
         self.tableViewPushButton.setChecked(False)
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
+        self.stackedWidget.currentChanged.connect(self.currentChangedSlot)
         self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
         # 表格类型选择初始化为"全部表格"
@@ -104,6 +105,17 @@ class ManageWidget(QWidget):
         self.addConditionPushButton.clicked.connect(self.addRowToConditionTableWidget)
         self.deleteConditionPushButton.clicked.connect(self.removeRowFromConditionTableWidget)
         self.condTableGenPushButton.clicked.connect(self.condTableGenPushButtonClickedSlot)
+
+    def currentChangedSlot(self, index):
+        """用户所选widget改变的槽函数"""
+        if index == 1:
+            # 当用户切换到了业务表生成的页面，更新ComboBox
+            self.dataSourceComboBox.addItems(self.__dm.get_my_tables("数据源表"))
+            self.ruleComboBox.addItems(self.__dm.get_my_tables("规则表"))
+            self.priceComboBox.addItems(self.__dm.get_my_tables("指导价表"))
+            self.clientComboBox.addItems(self.__dm.get_my_tables("客户编号表"))
+            self.managerComboBox.addItems(self.__dm.get_my_tables("主管表"))
+            self.aftersalesComboBox.addItems(self.__dm.get_my_tables("售后员表"))
 
     def changeListTableSlot(self):
         """左侧所选表格类型改变后会触发此函数，用于更新右侧表格listTableWidget列表内容"""
