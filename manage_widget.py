@@ -6,7 +6,8 @@ import pythoncom
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QObject, QMetaMethod
 from PyQt5.QtWidgets import QWidget, QApplication, QHeaderView, \
-    QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox, QProgressDialog, QSizePolicy
+    QAbstractItemView, QComboBox, QTableWidgetItem, QFileDialog, QDialog, QMessageBox, QProgressDialog, QSizePolicy, \
+    QListWidgetItem
 from PyQt5.uic import loadUi
 import resources  # 生成exe时需要此文件
 from InterfaceModule import Easyexcel
@@ -74,6 +75,12 @@ class ManageWidget(QWidget):
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
         self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
+        items = [QListWidgetItem(n) for n in ExcelCheck.headers.keys()]  # 注意："全部表格"直接放在UI里面了
+        for item in items:
+            item.setTextAlignment(Qt.AlignCenter)
+            self.selectListWidget.addItem(item)
+        self.selectListWidget.setCurrentRow(0)
+        self.selectListWidget.currentItemChanged.connect(self.changeListTableSlot)
         self.importPushButton.clicked.connect(self.importPushButtonClickedSlot)
         self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
@@ -84,6 +91,10 @@ class ManageWidget(QWidget):
         self.addConditionPushButton.clicked.connect(self.addRowToConditionTableWidget)
         self.deleteConditionPushButton.clicked.connect(self.removeRowFromConditionTableWidget)
         self.condTableGenPushButton.clicked.connect(self.condTableGenPushButtonClickedSlot)
+
+    def changeListTableSlot(self):
+        """左侧所选表格类型改变后会触发此函数，用于更新右侧表格listTableWidget列表内容"""
+        print(f"change to {self.selectListWidget.currentItem()}")
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
