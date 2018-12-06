@@ -29,7 +29,7 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page0">
     <property name="styleSheet">
@@ -593,7 +593,7 @@ QPushButton:enabled:pressed{
       <string>生成提成表单</string>
      </property>
     </widget>
-    <widget class="QProgressBar" name="progressBar">
+    <widget class="QProgressBar" name="genProgressBar">
      <property name="geometry">
       <rect>
        <x>510</x>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from CalcRatio import CalcRatio
+from excel_check import ExcelCheck
 
 
 class Saler(object):
@@ -45,13 +46,7 @@ class AfterSales(object):
             else:
                 self.salers[row[slr_dict['售后员']]].add_a_row(slr_dict, row)
         # 表头各属性名称，按顺序放置
-        self.header = ["售后", "业务", "开票日期", "客户编号", "客户名称",
-                       "开票金额（含税）", "发票号码", "到期时间", "款期", "付款日",
-                       "付款金额（含税）", "付款未税金额", "到款天数", "未税服务费", "客户类型",
-                       "提成比例", "提成金额", "我司单价", "公司指导价合计", "实际差价",
-                       "成品代码", "品名", "规格", "数量", "单位",
-                       "单价", "含税金额", "重量", "单桶公斤数量", "指导价",
-                       "单号", "出货时间", "出货地点"]
+        self.header = ExcelCheck.headers["售后员提成明细"]
         self.rst_dict = {}
         for i, attr in enumerate(self.header):
             self.rst_dict[attr] = i

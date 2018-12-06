@@ -105,6 +105,8 @@ class ManageWidget(QWidget):
         self.listTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         # 业务表生成page1
         self.cmsTableGenPushButton.clicked.connect(self.cmsTableGenPushButtonClickedSlot)
+        self.genProgressBar.setRange(0, 100)
+        self.genProgressBar.setValue(0)
         # 序时簿查看page2
         self.conditionTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.conditionTableWidget.removeRow(0)
@@ -191,6 +193,8 @@ class ManageWidget(QWidget):
         """槽函数：双击表格名称，打开表格查看"""
         self.addTabSignal.emit((name, ""))
 
+    generateCmsSignal = pyqtSignal(object)  # 生成提成表单子线程的信号
+
     def cmsTableGenPushButtonClickedSlot(self):
         """槽函数：点击生成提成表单按钮"""
         if self.cmsLineEdit.text() == '' and self.asCmsLineEdit.text() == '':
@@ -203,43 +207,70 @@ class ManageWidget(QWidget):
         if self.asCmsLineEdit.text() in table_names:
             QMessageBox.warning(self, "无法生成", f"表格'{self.asCmsLineEdit.text()}'已存在")
             return
-        src_dict, src_data = self.__dm.get_table(self.dataSourceComboBox.currentText())
-        rul_dict, rul_data = self.__dm.get_table(self.ruleComboBox.currentText())
-        calc_ratio = CalcRatio(rul_dict, rul_data)
-        clt_dict, clt_data = self.__dm.get_table(self.clientComboBox.currentText())
-        client_dict = {}  # 映射关系：客户编号->该客户对应行
-        for row in clt_data:
-            client_dict[row[clt_dict['客户编号']]] = row
-        sht2_head, sht2 = self.__dm.get_table(self.priceComboBox.currentText())
-        price = []
-        for row in sht2:
-            price.append(
-                [row[sht2_head['编号']], row[sht2_head['指导单价(未税)\n元/KG']], row[sht2_head['备注']], row[sht2_head['出货开始时间']],
-                 row[sht2_head['出货结束时间']]])
-        sht4_head, sht4 = self.__dm.get_table(self.managerComboBox.currentText())
-        slr_dict, slr_data = self.__dm.get_table(self.aftersalesComboBox.currentText())
-        places = []  # 售后员表中的地点名
-        for row in slr_data:
-            if row[1] != 'None':
-                places.append([row[1], row[5], row[6]])
 
+        def generateCmsSlot(info):
+            if isinstance(info, str):  # info为生成完成的表格
+                QMessageBox.information(self, "表单已生成", f'{info}已生成，请在业务表管理页面查看')
+            elif isinstance(info, Exception):  # 出现异常
+                self.cmsTableGenPushButton.setEnabled(True)
+                logging.exception(info)
+                QMessageBox.warning(self, "生成出错", str(info))
+
+        self.generateCmsSignal.connect(generateCmsSlot)
+        threading.Thread(target=self.generateCmsTableWork, daemon=True).start()
+        self.cmsTableGenPushButton.setEnabled(False)
+        QMessageBox.information(self, "正在生成表单", "正在生成表单，期间请不要查看其它页面")
+
+    def generateCmsTableWork(self):
+        """子线程函数：生成提成表单并写入数据库"""
         try:
+            dm = DataManager()
+            src_dict, src_data = dm.get_table(self.dataSourceComboBox.currentText())
+            rul_dict, rul_data = dm.get_table(self.ruleComboBox.currentText())
+            calc_ratio = CalcRatio(rul_dict, rul_data)
+            clt_dict, clt_data = dm.get_table(self.clientComboBox.currentText())
+            client_dict = {}  # 映射关系：客户编号->该客户对应行
+            for row in clt_data:
+                client_dict[row[clt_dict['客户编号']]] = row
+            sht2_head, sht2 = dm.get_table(self.priceComboBox.currentText())
+            price = []
+            for row in sht2:
+                price.append(
+                    [row[sht2_head['编号']], row[sht2_head['指导单价(未税)\n元/KG']], row[sht2_head['备注']], row[sht2_head['出货开始时间']],
+                     row[sht2_head['出货结束时间']]])
+            sht4_head, sht4 = dm.get_table(self.managerComboBox.currentText())
+            slr_dict, slr_data = dm.get_table(self.aftersalesComboBox.currentText())
+            places = []  # 售后员表中的地点名
+            for row in slr_data:
+                if row[1] != 'None':
+                    places.append([row[1], row[5], row[6]])
+            self.genProgressBar.setValue(10)
+
+            # 每次增加的进度=剩余进度(90)/每个表的阶段数(3)/要生成的表数
+            piece = 30/len([x for x in [self.cmsLineEdit.text(), self.asCmsLineEdit.text()] if x != ''])
             if self.cmsLineEdit.text() != '':
                 bs = Bonus(price)
                 h1, r1, r2 = bs.calc_commission(src_dict, src_data, clt_dict, client_dict, rul_dict, rul_data, places, sht4)
+                self.genProgressBar.setValue(self.genProgressBar.value()+piece)
                 # 下面的h1应该是与ExcelCheck.headers["业务员提成明细"]完全相同的
-                self.__dm.create_table("业务员提成明细", self.cmsLineEdit.text(), h1)
-                self.__dm.insert_data(self.cmsLineEdit.text(), h1, r1)
-                QMessageBox.information(self, "表单已生成", f'{self.asCmsLineEdit.text()}已生成，请在业务表管理页面查看')
+                dm.create_table("业务员提成明细", self.cmsLineEdit.text(), h1)
+                self.genProgressBar.setValue(self.genProgressBar.value() + piece)
+                dm.insert_data(self.cmsLineEdit.text(), h1, r1)
+                self.genProgressBar.setValue(self.genProgressBar.value() + piece)
+                self.generateCmsSignal.emit(self.cmsLineEdit.text())
                 self.cmsLineEdit.setText("")  # 清空表名
             if self.asCmsLineEdit.text() != '':
                 after_sales = AfterSales(slr_dict, slr_data)
                 as_header, as_content = after_sales.calc_commission(src_dict, src_data, clt_dict, client_dict, calc_ratio)
+                self.genProgressBar.setValue(self.genProgressBar.value() + piece)
                 # 下面的as_header应该是与ExcelCheck.headers["售后员提成明细"]完全相同的
-                self.__dm.create_table("售后员提成明细", self.asCmsLineEdit.text(), as_header)
-                self.__dm.insert_data(self.asCmsLineEdit.text(), as_header, as_content)
-                QMessageBox.information(self, "表单已生成", f'{self.asCmsLineEdit.text()}已生成，请在业务表管理页面查看')
+                dm.create_table("售后员提成明细", self.asCmsLineEdit.text(), as_header)
+                self.genProgressBar.setValue(self.genProgressBar.value() + piece)
+                dm.insert_data(self.asCmsLineEdit.text(), as_header, as_content)
+                self.genProgressBar.setValue(self.genProgressBar.value() + piece)
+                self.generateCmsSignal.emit(self.asCmsLineEdit.text())
                 self.asCmsLineEdit.setText("")  # 清空表名
+            self.cmsTableGenPushButton.setEnabled(True)
         except Exception as e:
             logging.exception(e)
             QMessageBox.warning(self, "生成出错", str(e))
