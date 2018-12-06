@@ -82,3 +82,10 @@ class DataManager(object):
         # 由于数据库中保存了id，所以这里要去掉首列的id，表头和列均去掉了首列的id，所以header_dict与data仍然是对应的
         data = [list(t[1:]) for t in self.__cursor.fetchall()]
         return header_dict, data
+
+    def remove_table(self, table_name: str):
+        """从数据库中删除要删除的表格"""
+        # 使用双引号将表名和列名引起来以防止有的表名为数字
+        self.__cursor.execute(f"""delete from meta_table where name = '{table_name}'""")
+        self.__cursor.execute(f"""drop table "{table_name}";""")
+        self.__cursor.connection.commit()

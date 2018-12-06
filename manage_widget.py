@@ -68,7 +68,6 @@ class TableNamePushButton(QPushButton):
         self.doubleClickSignal.emit(self.text())
 
 
-# TODO: 把生成表格改为查看表格，再加一个删除表格
 class ManageWidget(QWidget):
     conditionRow = {'logic': 0, 'name': 2, 'comp': 3, 'value': 4}
 
@@ -97,6 +96,8 @@ class ManageWidget(QWidget):
         self.selectListWidget.currentItemChanged.connect(self.changeListTableSlot)
         self.selectListWidget.setCurrentRow(0)  # 设置选中项放在connect之后，这样就会调用changeListTableSlot来初始化右侧表格
         self.importPushButton.clicked.connect(self.importPushButtonClickedSlot)
+        self.generatePushButton.clicked.connect(self.tableGeneratePushButtonClickedSlot)  # 生成表格的按钮与切换业务表生成效果完全相同
+        self.removePushButton.clicked.connect(self.removePushButtonClickedSlot)
         # 表格列表初始化为全部表格的列表
         self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
@@ -146,6 +147,22 @@ class ManageWidget(QWidget):
             timeItem.setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
             timeItem.setFlags(timeItem.flags() & ~Qt.ItemIsEditable)  # 设置不可修改
             self.listTableWidget.setItem(rowNumber, 2, timeItem)
+
+    def removePushButtonClickedSlot(self):
+        if len(self.listTableWidget.selectedRanges()) <= 0:
+            QMessageBox.warning(self, "无法删除", "尚未选中要删除的表格")
+            return
+        try:
+            # 删除时要按照最小索引从大往小删除
+            for selection in sorted(self.listTableWidget.selectedRanges(), key=lambda x: x.topRow(), reverse=True):
+                top, bottom = selection.topRow(), selection.bottomRow()
+                print(top, bottom)
+                for i in reversed(range(top, bottom+1)):  # 删除列表时要按照索引从大往小删除
+                    self.__dm.remove_table(self.listTableWidget.cellWidget(i, 0).text())
+                    self.listTableWidget.removeRow(i)
+        except Exception as e:
+            logging.exception(e)
+            QMessageBox.warning(self, "删除失败", str(e))
 
     def tableNameDoubleClickedSlot(self, name):
         """槽函数：双击表格名称，打开表格查看"""

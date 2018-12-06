@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>img/删除.png</file>
     <file>img/海边小路.png</file>
     <file>img/关闭.png</file>
     <file>img/选择器展开.png</file>

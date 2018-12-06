@@ -29,7 +29,7 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="page0">
     <property name="styleSheet">
@@ -163,7 +163,7 @@ QPushButton:hover{
       <string>导入表格</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="generatePushButton_2">
+    <widget class="QPushButton" name="removePushButton">
      <property name="geometry">
       <rect>
        <x>560</x>
@@ -187,11 +187,11 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>导出表格</string>
+      <string>删除表格</string>
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/img/export.png</normaloff>:/img/export.png</iconset>
+       <normaloff>:/img/删除.png</normaloff>:/img/删除.png</iconset>
      </property>
     </widget>
     <widget class="QPushButton" name="generatePushButton">
@@ -394,7 +394,7 @@ QPushButton#searchPushButton:hover{
     <zorder>vline</zorder>
     <zorder>hLine</zorder>
     <zorder>importPushButton</zorder>
-    <zorder>generatePushButton_2</zorder>
+    <zorder>removePushButton</zorder>
     <zorder>generatePushButton</zorder>
     <zorder>searchLineEdit</zorder>
     <zorder>label</zorder>
