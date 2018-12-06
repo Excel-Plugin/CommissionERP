@@ -103,8 +103,9 @@ class Easyexcel:
     def save(self):
         self.xlBook.Save()
 
-    def set_sheet(self, sheet_name, header, content):
-        """Excel支持写入int,float,str三种基本类型，其他类型不能保证
+    def set_sheet(self, sheet_name, header, content, s_num: set=None):
+        """s_num包括了所有符合条件的列的列号，条件为：此列的数据为数字串，但是内容要以'起始，标示为字符串，以防首位的0丢失（如发票号码）
+        Excel支持写入int,float,str三种基本类型，其他类型不能保证
         注意：datetime类型绝对不能直接写入！必须以str类型写入！（否则写入结果是错误的）"""
         sht = self.xlBook.Worksheets(sheet_name)
         # 在第1行写入表头
@@ -114,7 +115,10 @@ class Easyexcel:
         for i, row in enumerate(content):
             for j, value in enumerate(row):
                 if value != 'None':  # 若为空，则直接填空字符串
-                    sht.Cells(i+2, j+1).Value = value
+                    if s_num is not None and j in s_num:  # 将s_num标识的所有列数据标识为字符串
+                        sht.Cells(i+2, j+1).Value = "'" + value
+                    else:
+                        sht.Cells(i+2, j+1).Value = value
                 else:
                     sht.Cells(i+2, j+1).Value = ""
         self.save()

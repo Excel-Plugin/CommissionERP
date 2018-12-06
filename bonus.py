@@ -48,8 +48,10 @@ class Bonus(object):
             row[self.rst_dict['客户名称']] = rcd[src_dict['客户名称']]
             row[self.rst_dict['开票金额（含税）']] = rcd[src_dict['金额']]
             row[self.rst_dict['发票号码']] = rcd[src_dict['发票号码']]
-            if row[self.rst_dict['发票号码']]!="未税":
-                row[self.rst_dict['发票号码']]="'"+row[self.rst_dict['发票号码']]
+            # 由于导入数据库时要滤去特殊字符'，所以已将下面的操作移动到了Easyexcel.set_sheet中
+            # 首字符为单引号以标明此单元格为文本而非数字，避免发票号码首位的0丢失
+            # if row[self.rst_dict['发票号码']]!="未税":
+            #     row[self.rst_dict['发票号码']]="'"+row[self.rst_dict['发票号码']]
 
             row[self.rst_dict['到期时间']] = rcd[src_dict['到期时间']].split(" ")[0]
             row[self.rst_dict['款期']] = rcd[src_dict['款期']]

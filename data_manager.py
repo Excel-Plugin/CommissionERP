@@ -49,7 +49,7 @@ class DataManager(object):
         return {c[1]: c[2] for c in columns}
 
     def create_table(self, table_type: str, table_name: str, table_columns: list):
-        """新建一张类型为table_type，名为table_name的表，各列列名由table_columns定义，"""
+        """新建一张类型为table_type，名为table_name的表，各列列名由table_columns定义"""
         # 先加入meta_table
         self.__cursor.execute(
             f"insert into meta_table (name, type, create_time) "
@@ -71,3 +71,14 @@ class DataManager(object):
                 self.__cursor.connection.commit()
             except Exception as e:
                 raise Exception(f"执行第{i}行对应的SQL语句时出错：{str(e)}\n{sql}")
+
+    def get_table(self, table_name: str) -> (dict, list):
+        """返回表格的表头字典和数据表(list[list])"""
+        header = self.__cursor.execute(f'pragma table_info({table_name})')
+        # 由于数据库中保存了id，所以这里要去掉首列的id；由于id位于第一个，所以后面的索引减去1
+        header_dict = {t[1]: t[0]-1 for t in self.__cursor.fetchall()[1:]}
+        self.__cursor.execute(f'select * from {table_name}')
+        # fetchall返回的是tuple的list，这里转为list的list
+        # 由于数据库中保存了id，所以这里要去掉首列的id，表头和列均去掉了首列的id，所以header_dict与data仍然是对应的
+        data = [list(t[1:]) for t in self.__cursor.fetchall()]
+        return header_dict, data

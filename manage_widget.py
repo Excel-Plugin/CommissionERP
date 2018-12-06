@@ -11,7 +11,10 @@ from PyQt5.QtWidgets import QWidget, QApplication, QHeaderView, \
     QListWidgetItem, QPushButton
 from PyQt5.uic import loadUi
 import resources  # 生成exe时需要此文件
+from CalcRatio import CalcRatio
 from InterfaceModule import Easyexcel
+from after_sales import AfterSales
+from bonus import Bonus
 from data_manager import DataManager
 from excel_access import ExcelAccess
 from excel_check import ExcelCheck
@@ -74,7 +77,7 @@ class ManageWidget(QWidget):
         loadUi('manage_widget.ui', self)
         # 数据库管理
         self.__dm = DataManager()
-        # 整体界面设置
+        # 整体界面初始化
         self.addTabSignal = addTabSignal
         self.setWindowFlags(Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
         self.setFixedSize(self.width(), self.height())
@@ -85,7 +88,6 @@ class ManageWidget(QWidget):
         self.tableViewPushButton.setChecked(False)
         self.tableViewPushButton.clicked.connect(self.tableViewPushButtonClickedSlot)
         self.stackedWidget.currentChanged.connect(self.currentChangedSlot)
-        self.stackedWidget.setCurrentIndex(0)
         # 业务表管理page0
         # 表格类型选择初始化为"全部表格"
         items = [QListWidgetItem(n) for n in ExcelCheck.headers.keys()]  # 注意："全部表格"直接放在UI里面了
@@ -107,10 +109,15 @@ class ManageWidget(QWidget):
         self.addConditionPushButton.clicked.connect(self.addRowToConditionTableWidget)
         self.deleteConditionPushButton.clicked.connect(self.removeRowFromConditionTableWidget)
         self.condTableGenPushButton.clicked.connect(self.condTableGenPushButtonClickedSlot)
+        # 各页面初始化好以后，进行整体界面设置
+        self.stackedWidget.setCurrentIndex(0)
 
     def currentChangedSlot(self, index):
-        """用户所选widget改变的槽函数"""
-        if index == 1:
+        """槽函数：用户所选widget改变"""
+        if index == 0:
+            # 当用户切换到业务表管理的页面时，更新当前显示的表单
+            self.changeListTableSlot()
+        elif index == 1:
             # 当用户切换到了业务表生成的页面，更新ComboBox
             self.dataSourceComboBox.addItems(self.__dm.get_my_tables("数据源表"))
             self.ruleComboBox.addItems(self.__dm.get_my_tables("规则表"))
@@ -120,7 +127,7 @@ class ManageWidget(QWidget):
             self.aftersalesComboBox.addItems(self.__dm.get_my_tables("售后员表"))
 
     def changeListTableSlot(self):
-        """左侧所选表格类型改变后会触发此函数，用于更新右侧表格listTableWidget列表内容"""
+        """槽函数：左侧所选表格类型改变后会触发此函数，用于更新右侧表格listTableWidget列表内容"""
         for i in reversed(range(self.listTableWidget.rowCount())):  # 清空表格
             self.listTableWidget.removeRow(i)
         info_list = self.__dm.get_my_tables_info(self.selectListWidget.currentItem().text())
@@ -141,6 +148,7 @@ class ManageWidget(QWidget):
             self.listTableWidget.setItem(rowNumber, 2, timeItem)
 
     def tableNameDoubleClickedSlot(self, name):
+        """槽函数：双击表格名称，打开表格查看"""
         self.addTabSignal.emit((name, ""))
 
     def cmsTableGenPushButtonClickedSlot(self):
@@ -148,7 +156,53 @@ class ManageWidget(QWidget):
         if self.cmsLineEdit.text() == '' and self.asCmsLineEdit.text() == '':
             QMessageBox.warning(self, "无法生成", "业务员提成明细和售后员提成明细均为空，请填写要生成的表单名称")
             return
-        # TODO: 调用CommissionCalculator项目中计算提成的代码
+        table_names = self.__dm.get_tables()
+        if self.cmsLineEdit.text() in table_names:
+            QMessageBox.warning(self, "无法生成", f"表格'{self.cmsLineEdit.text()}'已存在")
+            return
+        if self.asCmsLineEdit.text() in table_names:
+            QMessageBox.warning(self, "无法生成", f"表格'{self.asCmsLineEdit.text()}'已存在")
+            return
+        src_dict, src_data = self.__dm.get_table(self.dataSourceComboBox.currentText())
+        rul_dict, rul_data = self.__dm.get_table(self.ruleComboBox.currentText())
+        calc_ratio = CalcRatio(rul_dict, rul_data)
+        clt_dict, clt_data = self.__dm.get_table(self.clientComboBox.currentText())
+        client_dict = {}  # 映射关系：客户编号->该客户对应行
+        for row in clt_data:
+            client_dict[row[clt_dict['客户编号']]] = row
+        sht2_head, sht2 = self.__dm.get_table(self.priceComboBox.currentText())
+        price = []
+        for row in sht2:
+            price.append(
+                [row[sht2_head['编号']], row[sht2_head['指导单价(未税)\n元/KG']], row[sht2_head['备注']], row[sht2_head['出货开始时间']],
+                 row[sht2_head['出货结束时间']]])
+        sht4_head, sht4 = self.__dm.get_table(self.managerComboBox.currentText())
+        slr_dict, slr_data = self.__dm.get_table(self.aftersalesComboBox.currentText())
+        places = []  # 售后员表中的地点名
+        for row in slr_data:
+            if row[1] != 'None':
+                places.append([row[1], row[5], row[6]])
+
+        try:
+            if self.cmsLineEdit.text() != '':
+                bs = Bonus(price)
+                h1, r1, r2 = bs.calc_commission(src_dict, src_data, clt_dict, client_dict, rul_dict, rul_data, places, sht4)
+                # 下面的h1应该是与ExcelCheck.headers["业务员提成明细"]完全相同的
+                self.__dm.create_table("业务员提成明细", self.cmsLineEdit.text(), h1)
+                self.__dm.insert_data(self.cmsLineEdit.text(), h1, r1)
+                QMessageBox.information(self, "表单已生成", f'{self.asCmsLineEdit.text()}已生成，请在业务表管理页面查看')
+                self.cmsLineEdit.setText("")  # 清空表名
+            if self.asCmsLineEdit.text() != '':
+                after_sales = AfterSales(slr_dict, slr_data)
+                as_header, as_content = after_sales.calc_commission(src_dict, src_data, clt_dict, client_dict, calc_ratio)
+                # 下面的as_header应该是与ExcelCheck.headers["售后员提成明细"]完全相同的
+                self.__dm.create_table("售后员提成明细", self.asCmsLineEdit.text(), as_header)
+                self.__dm.insert_data(self.asCmsLineEdit.text(), as_header, as_content)
+                QMessageBox.information(self, "表单已生成", f'{self.asCmsLineEdit.text()}已生成，请在业务表管理页面查看')
+                self.asCmsLineEdit.setText("")  # 清空表名
+        except Exception as e:
+            logging.exception(e)
+            QMessageBox.warning(self, "生成出错", str(e))
 
     def addRowToConditionTableWidget(self):
         rowNumber = self.conditionTableWidget.rowCount()
