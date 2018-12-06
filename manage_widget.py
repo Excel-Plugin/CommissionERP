@@ -98,6 +98,7 @@ class ManageWidget(QWidget):
         self.importPushButton.clicked.connect(self.importPushButtonClickedSlot)
         self.generatePushButton.clicked.connect(self.tableGeneratePushButtonClickedSlot)  # 生成表格的按钮与切换业务表生成效果完全相同
         self.removePushButton.clicked.connect(self.removePushButtonClickedSlot)
+        self.searchPushButton.clicked.connect(self.searchPushButtonClickedSlot)
         # 表格列表初始化为全部表格的列表
         self.listTableWidget.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
         self.listTableWidget.horizontalHeader().setDefaultSectionSize(250)
@@ -149,6 +150,7 @@ class ManageWidget(QWidget):
             self.listTableWidget.setItem(rowNumber, 2, timeItem)
 
     def removePushButtonClickedSlot(self):
+        """槽函数：业务表管理>删除表格"""
         if len(self.listTableWidget.selectedRanges()) <= 0:
             QMessageBox.warning(self, "无法删除", "尚未选中要删除的表格")
             return
@@ -156,13 +158,34 @@ class ManageWidget(QWidget):
             # 删除时要按照最小索引从大往小删除
             for selection in sorted(self.listTableWidget.selectedRanges(), key=lambda x: x.topRow(), reverse=True):
                 top, bottom = selection.topRow(), selection.bottomRow()
-                print(top, bottom)
                 for i in reversed(range(top, bottom+1)):  # 删除列表时要按照索引从大往小删除
                     self.__dm.remove_table(self.listTableWidget.cellWidget(i, 0).text())
                     self.listTableWidget.removeRow(i)
         except Exception as e:
             logging.exception(e)
             QMessageBox.warning(self, "删除失败", str(e))
+
+    def searchPushButtonClickedSlot(self):
+        """槽函数：业务表管理>点击搜索"""
+        for i in reversed(range(self.listTableWidget.rowCount())):  # 清空表格
+            self.listTableWidget.removeRow(i)
+        info_list = self.__dm.get_my_tables_info(self.selectListWidget.currentItem().text())
+        for table_info in info_list:
+            table_name, table_type, create_time = table_info  # 每个元素为一个元组(表名,类型,秒级时间戳)
+            if self.searchLineEdit.text() in table_name:  # 将符合条件的表格显示出来
+                rowNumber = self.listTableWidget.rowCount()
+                self.listTableWidget.insertRow(rowNumber)
+                nameItem = TableNamePushButton(table_name)
+                nameItem.doubleClickSignal.connect(self.tableNameDoubleClickedSlot)
+                self.listTableWidget.setCellWidget(rowNumber, 0, nameItem)
+                typeItem = QTableWidgetItem(table_type)
+                typeItem.setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+                typeItem.setFlags(typeItem.flags() & ~Qt.ItemIsEditable)  # 设置不可修改
+                self.listTableWidget.setItem(rowNumber, 1, typeItem)
+                timeItem = QTableWidgetItem(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(create_time)))
+                timeItem.setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+                timeItem.setFlags(timeItem.flags() & ~Qt.ItemIsEditable)  # 设置不可修改
+                self.listTableWidget.setItem(rowNumber, 2, timeItem)
 
     def tableNameDoubleClickedSlot(self, name):
         """槽函数：双击表格名称，打开表格查看"""

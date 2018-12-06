@@ -234,9 +234,6 @@ QPushButton:hover{
        <height>41</height>
       </rect>
      </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;你好啊&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit#searchLineEdit{
 	border-top: 0px;
