@@ -33,7 +33,7 @@ class NameComboBox(QComboBox):
 
     def __init__(self, columns):
         super(QComboBox, self).__init__()
-        self.addItems([c[1] for c in columns])
+        self.addItems(columns)
 
 
 class CompComboBox(QComboBox):
@@ -191,7 +191,7 @@ class ManageWidget(QWidget):
 
     def tableNameDoubleClickedSlot(self, name):
         """槽函数：双击表格名称，打开表格查看"""
-        self.addTabSignal.emit((name, ""))
+        self.addTabSignal.emit((name, "", False))
 
     generateCmsSignal = pyqtSignal(object)  # 生成提成表单子线程的信号
 
@@ -280,7 +280,7 @@ class ManageWidget(QWidget):
         self.conditionTableWidget.insertRow(rowNumber)
         self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['logic'], LogicComboBox())
         self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['name'],
-                                                NameComboBox(self.__dm.get_columns('salesman')))  # TODO:这里需要改成要查看的序时簿
+                                                NameComboBox(ExcelCheck.headers[self.tableTypeComboBox.currentText()]))
         self.conditionTableWidget.setCellWidget(rowNumber, self.conditionRow['comp'], CompComboBox())
         self.conditionTableWidget.setItem(rowNumber, self.conditionRow['value'], QTableWidgetItem(""))
 
@@ -312,9 +312,10 @@ class ManageWidget(QWidget):
                 condition += " and "
             name = self.conditionTableWidget.cellWidget(i, self.conditionRow['name']).currentText()
             value = self.conditionTableWidget.item(i, self.conditionRow['value']).text()
+            # TODO: 虽然数据库中所有列都是text，但这里可能需要根据具体数据类型计算
             condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp']) \
-                .getCondition(self.__dm.get_column_types('salesman'), name, value)  # TODO: 这里表名应为要查看序时簿的表名
-        self.addTabSignal.emit(('salesman', condition))
+                .getCondition({x: 'text' for x in ExcelCheck.headers[self.tableTypeComboBox.currentText()]}, name, value)
+        self.addTabSignal.emit((self.tableTypeComboBox.currentText(), condition, True))
 
     loadingSignal = QtCore.pyqtSignal(object)  # 读取sheet的进度框，可能为True表示完成，也可能为Exception表示出错
 

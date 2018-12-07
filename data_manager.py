@@ -39,8 +39,14 @@ class DataManager(object):
         return self.__cursor.fetchall()
 
     def get_columns(self, table_name: str) -> list:
+        """返回一个元素为元组的列表，包括每个列的全部信息"""
         self.__cursor.execute('pragma table_info(' + table_name + ')')
         return self.__cursor.fetchall()
+
+    def get_column_names(self, table_name: str) -> list:
+        """返回一个列表，每个元素为一个列名"""
+        self.__cursor.execute('pragma table_info(' + table_name + ')')
+        return [t[1] for t in self.__cursor.fetchall()]
 
     def get_column_types(self, table_name: str) -> dict:
         """返回一个字典：列名->列数据类型"""
