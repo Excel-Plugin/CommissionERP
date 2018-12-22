@@ -219,7 +219,9 @@ class ManageWidget(QWidget):
         self.generateCmsSignal.connect(generateCmsSlot)
         threading.Thread(target=self.generateCmsTableWork, daemon=True).start()
         self.cmsTableGenPushButton.setEnabled(False)
-        QMessageBox.information(self, "正在生成表单", "正在生成表单，期间请不要查看其它页面")
+        self.tableManagePushButton.setEnabled(False)  # 禁止查看其他页面，否则页面会卡死
+        self.tableViewPushButton.setEnabled(False)  # 禁止查看其他页面，否则页面会卡死
+        # QMessageBox.information(self, "正在生成表单", "正在生成表单，期间请不要查看其它页面")
 
     def generateCmsTableWork(self):
         """子线程函数：生成提成表单并写入数据库"""
@@ -271,6 +273,8 @@ class ManageWidget(QWidget):
                 self.generateCmsSignal.emit(self.asCmsLineEdit.text())
                 self.asCmsLineEdit.setText("")  # 清空表名
             self.cmsTableGenPushButton.setEnabled(True)
+            self.tableManagePushButton.setEnabled(True)
+            self.tableViewPushButton.setEnabled(True)
         except Exception as e:
             logging.exception(e)
             QMessageBox.warning(self, "生成出错", str(e))
@@ -313,6 +317,7 @@ class ManageWidget(QWidget):
             name = self.conditionTableWidget.cellWidget(i, self.conditionRow['name']).currentText()
             value = self.conditionTableWidget.item(i, self.conditionRow['value']).text()
             # TODO: 虽然数据库中所有列都是text，但这里可能需要根据具体数据类型计算
+            # 但是好像不需要这样做，因为表格的生成逻辑会根据语义来将字符串转换成相应的语义类型来进行计算，所以保存成text就足够了
             condition += self.conditionTableWidget.cellWidget(i, self.conditionRow['comp']) \
                 .getCondition({x: 'text' for x in ExcelCheck.headers[self.tableTypeComboBox.currentText()]}, name, value)
         self.addTabSignal.emit((self.tableTypeComboBox.currentText(), condition, True))
