@@ -29,7 +29,7 @@
     <string notr="true"/>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page0">
     <property name="styleSheet">
@@ -59,70 +59,6 @@ QListWidget#selectListWidget::item{
      <item>
       <property name="text">
        <string>全部表格</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>数据源表</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>售后员</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>客户编号</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>规则</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>指导价</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>主管</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>业务员提成明细</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>售后员提成明细</string>
       </property>
       <property name="textAlignment">
        <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -227,7 +163,7 @@ QPushButton:hover{
       <string>导入表格</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="generatePushButton_2">
+    <widget class="QPushButton" name="removePushButton">
      <property name="geometry">
       <rect>
        <x>560</x>
@@ -251,11 +187,11 @@ QPushButton:hover{
 }</string>
      </property>
      <property name="text">
-      <string>导出表格</string>
+      <string>删除表格</string>
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/img/export.png</normaloff>:/img/export.png</iconset>
+       <normaloff>:/img/删除.png</normaloff>:/img/删除.png</iconset>
      </property>
     </widget>
     <widget class="QPushButton" name="generatePushButton">
@@ -298,9 +234,6 @@ QPushButton:hover{
        <height>41</height>
       </rect>
      </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;你好啊&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit#searchLineEdit{
 	border-top: 0px;
@@ -331,8 +264,18 @@ QPushButton:hover{
 
 QHeaderView::section::horizontal{
 	color: rgb(105, 164, 240);
+	text-align: center;
 }
 
+QPushButton{
+	background: transparent;
+	border: none;
+	font-family: &quot;微软雅黑&quot;;
+}
+
+QPushButton:hover{
+	color: rgb(85, 170, 255);
+}
 </string>
      </property>
      <property name="gridStyle">
@@ -448,7 +391,7 @@ QPushButton#searchPushButton:hover{
     <zorder>vline</zorder>
     <zorder>hLine</zorder>
     <zorder>importPushButton</zorder>
-    <zorder>generatePushButton_2</zorder>
+    <zorder>removePushButton</zorder>
     <zorder>generatePushButton</zorder>
     <zorder>searchLineEdit</zorder>
     <zorder>label</zorder>
@@ -606,21 +549,6 @@ QPushButton:enabled:pressed{
        <height>31</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>数据源表2018-08</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>数据源表2018-07</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>数据源表2018-06</string>
-      </property>
-     </item>
     </widget>
     <widget class="QComboBox" name="ruleComboBox">
      <property name="geometry">
@@ -631,13 +559,8 @@ QPushButton:enabled:pressed{
        <height>31</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>规则表A</string>
-      </property>
-     </item>
     </widget>
-    <widget class="QComboBox" name="comboBox_3">
+    <widget class="QComboBox" name="aftersalesComboBox">
      <property name="geometry">
       <rect>
        <x>700</x>
@@ -646,13 +569,8 @@ QPushButton:enabled:pressed{
        <height>31</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>售后员表2018-06</string>
-      </property>
-     </item>
     </widget>
-    <widget class="QComboBox" name="comboBox_4">
+    <widget class="QComboBox" name="managerComboBox">
      <property name="geometry">
       <rect>
        <x>210</x>
@@ -661,13 +579,8 @@ QPushButton:enabled:pressed{
        <height>31</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>主管表2018-06</string>
-      </property>
-     </item>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="cmsTableGenPushButton">
      <property name="geometry">
       <rect>
        <x>310</x>
@@ -680,7 +593,7 @@ QPushButton:enabled:pressed{
       <string>生成提成表单</string>
      </property>
     </widget>
-    <widget class="QProgressBar" name="progressBar">
+    <widget class="QProgressBar" name="genProgressBar">
      <property name="geometry">
       <rect>
        <x>510</x>
@@ -718,7 +631,7 @@ QProgressBar::chunk {
       <string>指导价</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="dataSourceComboBox_2">
+    <widget class="QComboBox" name="priceComboBox">
      <property name="geometry">
       <rect>
        <x>210</x>
@@ -727,11 +640,6 @@ QProgressBar::chunk {
        <height>31</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>指导价表2018-08</string>
-      </property>
-     </item>
     </widget>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
@@ -746,7 +654,7 @@ QProgressBar::chunk {
       <string>客户编号</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="ruleComboBox_2">
+    <widget class="QComboBox" name="clientComboBox">
      <property name="geometry">
       <rect>
        <x>700</x>
@@ -755,11 +663,6 @@ QProgressBar::chunk {
        <height>31</height>
       </rect>
      </property>
-     <item>
-      <property name="text">
-       <string>客户编号表A</string>
-      </property>
-     </item>
     </widget>
     <widget class="QLabel" name="label_8">
      <property name="geometry">
@@ -774,7 +677,7 @@ QProgressBar::chunk {
       <string>业务员提成明细</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit">
+    <widget class="QLineEdit" name="cmsLineEdit">
      <property name="geometry">
       <rect>
        <x>210</x>
@@ -784,7 +687,7 @@ QProgressBar::chunk {
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_2">
+    <widget class="QLineEdit" name="asCmsLineEdit">
      <property name="geometry">
       <rect>
        <x>700</x>

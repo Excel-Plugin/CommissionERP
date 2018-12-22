@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>业务表查看</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow{
@@ -377,6 +377,13 @@ QPushButton#closeButton:pressed {
      <widget class="QTabWidget" name="tabWidget">
       <property name="whatsThis">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QTabBar::close-button { 
+	image: url(:/img/关闭.png);
+	subcontrol-origin: padding; 
+	subcontrol-position: bottom right;
+}</string>
       </property>
       <property name="currentIndex">
        <number>-1</number>
